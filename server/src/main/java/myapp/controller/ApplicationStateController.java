@@ -5,7 +5,7 @@ import org.opendolphin.core.server.comm.ActionRegistry;
 
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.BasePmMixin;
-import myapp.presentationmodel.presentationstate.ApplicationState;
+import myapp.presentationmodel.applicationstate.ApplicationState;
 import myapp.util.Controller;
 import myapp.util.Language;
 
@@ -24,14 +24,15 @@ public class ApplicationStateController extends Controller implements BasePmMixi
 
     @Override
     protected void initializeBasePMs() {
-        ServerPresentationModel presentationStatePM = createProxyPM(PMDescription.APPLICATION_STATE, APPLICATION_STATE_PM_ID);
+        ServerPresentationModel applicationStatePM = createPM(PMDescription.APPLICATION_STATE, APPLICATION_STATE_ID, true);
 
-        ps = new ApplicationState(presentationStatePM);
+        ps = new ApplicationState(applicationStatePM);
+        ps.selectedCarId.setValue(EMPTY_SELECTION_ID);
     }
 
     @Override
     protected void setDefaultValues() {
-        ps.language.setValue(Language.ENGLISH);
+        ps.language.setValue(Language.GERMAN);
         ps.cleanData.setValue(true);
     }
 

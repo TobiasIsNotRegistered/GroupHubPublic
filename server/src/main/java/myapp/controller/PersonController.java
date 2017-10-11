@@ -40,7 +40,7 @@ class PersonController extends Controller implements BasePmMixin {
 
     @Override
     protected void initializeBasePMs() {
-        ServerPresentationModel pm = createProxyPM(PMDescription.PERSON, PERSON_PROXY_PM_ID);
+        ServerPresentationModel pm = createProxyPM(PMDescription.PERSON, PERSON_PROXY_ID);
 
         personProxy = new Person(pm);
     }

@@ -1,20 +1,24 @@
 package myapp.presentationmodel;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.ModelStoreEvent;
 
+import myapp.presentationmodel.applicationstate.ApplicationState;
 import myapp.presentationmodel.person.Person;
-import myapp.presentationmodel.presentationstate.ApplicationState;
 
 /**
  * @author Dieter Holz
  */
 public interface BasePmMixin {
     //todo: for all your basePMs (as delivered by your Controllers) specify constants and getter-methods like these
-    String PERSON_PROXY_PM_ID = PMDescription.PERSON.pmId(-777L);
+    long PERSON_PROXY_ID = -777L;
 
     default BasePresentationModel getPersonProxyPM() {
-        return (BasePresentationModel) getDolphin().getAt(PERSON_PROXY_PM_ID);
+        return (BasePresentationModel) getDolphin().getAt(PMDescription.PERSON.pmId(PERSON_PROXY_ID));
     }
 
     default Person getPersonProxy() {
@@ -22,10 +26,11 @@ public interface BasePmMixin {
     }
 
     // always needed
-    String APPLICATION_STATE_PM_ID = PMDescription.APPLICATION_STATE.pmId(-888);
+    long EMPTY_SELECTION_ID   = -1L;
+    long APPLICATION_STATE_ID = -888L;
 
     default BasePresentationModel getApplicationStatePM() {
-        return (BasePresentationModel) getDolphin().getAt(APPLICATION_STATE_PM_ID);
+        return (BasePresentationModel) getDolphin().getAt(PMDescription.APPLICATION_STATE.pmId(APPLICATION_STATE_ID));
     }
 
     default ApplicationState getApplicationState() {
@@ -33,4 +38,24 @@ public interface BasePmMixin {
     }
 
     Dolphin getDolphin();
+
+    default <Veneer> ObservableList<Veneer> observableList(PMDescription pmDescription, VeneerFactory<Veneer> veneerFactory) {
+        ObservableList<Veneer> list = FXCollections.observableArrayList();
+        getDolphin().addModelStoreListener(pmDescription.getName(),
+                                           event -> {
+                                               BasePresentationModel pm = (BasePresentationModel) event.getPresentationModel();
+                                               Veneer                v  = veneerFactory.create(pm);
+                                               if (event.getType().equals(ModelStoreEvent.Type.ADDED)) {
+                                                   list.add(v);
+                                               } else {
+                                                   list.remove(v);
+                                               }
+                                           });
+        return list;
+    }
+
+    @FunctionalInterface
+    interface VeneerFactory<V> {
+        V create(BasePresentationModel pm);
+    }
 }

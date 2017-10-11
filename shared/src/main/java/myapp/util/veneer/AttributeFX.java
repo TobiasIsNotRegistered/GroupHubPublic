@@ -1,13 +1,12 @@
 package myapp.util.veneer;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import org.opendolphin.core.Attribute;
@@ -31,6 +30,7 @@ import myapp.util.veneer.dolphinattributeadapter.StringAttributeAdapter;
 public abstract class AttributeFX<PropertyType extends Property<ValueType>, ValueType> {
     protected static final Locale DEFAULT_LOCALE = Language.GERMAN.getLocale();
     private static final String MANDATORY_MESSAGE = "Mandatory field";
+    public static final String IS_VALID_MESSAGE = "OK!";
 
     private final PropertyType            value;
     private final StringProperty          label;
@@ -42,51 +42,65 @@ public abstract class AttributeFX<PropertyType extends Property<ValueType>, Valu
     private final ReadOnlyBooleanProperty dirty;
 
     private final Pattern syntaxPattern;
+    private final String  formatPattern;
+
+    private final AttributeDescription attributeDescription;
+
+    protected AttributeFX(PresentationModel pm, AttributeDescription attributeDescription, PropertyType dolphinValueAttributeAdapter) {
+        this(pm, attributeDescription, attributeDescription.getValueType().syntaxPattern(), dolphinValueAttributeAdapter);
+    }
 
     protected AttributeFX(PresentationModel pm, AttributeDescription attributeDescription, String syntaxPattern, PropertyType dolphinValueAttributeAdapter) {
-        this.syntaxPattern  = Pattern.compile(syntaxPattern);
+        this.attributeDescription = attributeDescription;
+        this.syntaxPattern        = Pattern.compile(syntaxPattern);
+        this.formatPattern        = attributeDescription.getValueType().formatPattern();
 
-        value             = dolphinValueAttributeAdapter;
-        label             = new StringAttributeAdapter(pm.getAt(attributeDescription.name() , Tag.LABEL));
-        mandatory         = new BooleanAttributeAdapter(pm.getAt(attributeDescription.name(), Tag.MANDATORY));
-        readOnly          = new BooleanAttributeAdapter(pm.getAt(attributeDescription.name(), AdditionalTag.READ_ONLY));
-        valid             = new BooleanAttributeAdapter(pm.getAt(attributeDescription.name(), AdditionalTag.VALID));
-        validationMessage = new StringAttributeAdapter(pm.getAt(attributeDescription.name() , AdditionalTag.VALIDATION_MESSAGE));
-        userFacingString  = new StringAttributeAdapter(pm.getAt(attributeDescription.name() , AdditionalTag.USER_FACING_STRING));
+        String propertyName = attributeDescription.name();
+
+        value = dolphinValueAttributeAdapter;
+        Attribute at = pm.getAt(propertyName, Tag.LABEL);
+        if (at == null) {
+            label = new SimpleStringProperty(propertyName);
+        } else {
+            label = new StringAttributeAdapter(at);
+        }
+        mandatory         = new BooleanAttributeAdapter(pm.getAt(propertyName, Tag.MANDATORY));
+        readOnly          = new BooleanAttributeAdapter(pm.getAt(propertyName, AdditionalTag.READ_ONLY));
+        valid             = new BooleanAttributeAdapter(pm.getAt(propertyName, AdditionalTag.VALID));
+        validationMessage = new StringAttributeAdapter(pm.getAt(propertyName, AdditionalTag.VALIDATION_MESSAGE));
+        userFacingString  = new SimpleStringProperty();
         dirty             = new DirtyPropertyAdapter(valueAttribute(pm, attributeDescription));
 
-        setUserFacingString(format(valueProperty().getValue()));
+        reactToValueChange(valueProperty().getValue());
 
-        userFacingStringProperty().addListener((observable, oldValue, newValue) -> {
-            if(Platform.isFxApplicationThread()){
-                Platform.runLater(() -> reactToUserInput(newValue));
-            }
-            else {
-                reactToUserInput(newValue);
-            }
-        });
+        if (pm.getClass().getSimpleName().equals("ClientPresentationModel")) {
+            userFacingStringProperty().addListener((observable, oldValue, newValue) -> reactToUserInput(newValue));
 
-        valueProperty().addListener((observable, oldValue, newValue) -> {
-            String formattedValue = format(newValue);
-            if(!Objects.equals(formattedValue, getUserFacingString())){
-                if(Platform.isFxApplicationThread()){
-                    Platform.runLater(() -> setUserFacingString(formattedValue));
-                }
-                else {
-                    setUserFacingString(formattedValue);
-                }
-            }
-        });
+            valueProperty().addListener((observable, oldValue, newValue) -> reactToValueChange(newValue));
+        }
+    }
+
+    public boolean isBuildFor(AttributeDescription attributeDescription){
+        return this.attributeDescription.equals(attributeDescription);
     }
 
     protected static Attribute valueAttribute(PresentationModel pm, AttributeDescription attributeDescription) {
         return pm.getAt(attributeDescription.name());
     }
 
+    protected String getFormatPattern(){
+        return formatPattern;
+    }
+
     protected abstract String format(ValueType value);
 
     protected abstract ValueType convertToValue(String string);
 
+    private void reactToValueChange(ValueType newValue){
+        setValid(true);
+        setValidationMessage(IS_VALID_MESSAGE);
+        setUserFacingString(format(newValue));
+    }
 
     private void reactToUserInput(String userInput) {
         if (isMandatory() && (userInput == null || userInput.isEmpty())) {
@@ -100,11 +114,8 @@ public abstract class AttributeFX<PropertyType extends Property<ValueType>, Valu
             setValidationMessage("doesn't match '" + syntaxPattern.pattern() + "'");
         } else {
             setValid(true);
-            setValidationMessage("OK!");
-            ValueType value = convertToValue(userInput);
-            if(!Objects.equals(value, valueProperty().getValue())){
-                valueProperty().setValue(value);
-            }
+            setValidationMessage(IS_VALID_MESSAGE);
+            valueProperty().setValue(convertToValue(userInput));
         }
     }
 

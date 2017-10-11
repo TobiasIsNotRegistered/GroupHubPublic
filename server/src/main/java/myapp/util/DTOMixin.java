@@ -19,11 +19,11 @@ import myapp.util.AttributeDescription;
 public interface DTOMixin {
 
     default long createNewId() {
-        return System.currentTimeMillis();
+        return System.nanoTime();
     }
 
     default Slot createSlot(AttributeDescription att, Object value, long entityId) {
-        return new Slot(att.name(), value, att.qualifier(entityId));
+        return new Slot(att.name(), att.getValueType().equals(ValueType.ID) ? entityId : value, att.qualifier(entityId));
     }
 
     default DTO createDTO(PMDescription pmDescription) {
@@ -82,12 +82,14 @@ public interface DTOMixin {
             case LONG:
                 return 0L;
             case YEAR:
-                return (short) 2016;
+                return 2016;
             case STRING:
                 return "";
             default:
-                return null;
+                return "";
         }
     }
+
+
 
 }

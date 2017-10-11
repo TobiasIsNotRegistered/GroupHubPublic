@@ -22,11 +22,12 @@ import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 
 import myapp.presentationmodel.BasePmMixin;
+import myapp.presentationmodel.PMDescription;
+import myapp.presentationmodel.applicationstate.ApplicationState;
+import myapp.presentationmodel.applicationstate.ApplicationStateAtt;
 import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.person.PersonAtt;
 import myapp.presentationmodel.person.PersonCommands;
-import myapp.presentationmodel.presentationstate.ApplicationState;
-import myapp.presentationmodel.presentationstate.ApplicationStateAtt;
 import myapp.util.AdditionalTag;
 import myapp.util.Language;
 import myapp.util.ViewMixin;
@@ -174,7 +175,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     private void setupBindings_DolphinBased() {
         // you can fetch all existing PMs from the modelstore via clientDolphin
-        ClientPresentationModel personProxyPM = clientDolphin.getAt(BasePmMixin.PERSON_PROXY_PM_ID);
+        ClientPresentationModel personProxyPM = clientDolphin.getAt(PMDescription.PERSON.pmId(BasePmMixin.PERSON_PROXY_ID));
 
         //JFXBinder is ui toolkit agnostic. We have to use Strings
         JFXBinder.bind(PersonAtt.NAME.name())
@@ -218,7 +219,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         JFXBinder.bindInfo(Attribute.DIRTY_PROPERTY).of(personProxyPM).using(not).to("disable").of(saveButton);
         JFXBinder.bindInfo(Attribute.DIRTY_PROPERTY).of(personProxyPM).using(not).to("disable").of(resetButton);
 
-        PresentationModel presentationStatePM = clientDolphin.getAt(BasePmMixin.APPLICATION_STATE_PM_ID);
+        PresentationModel presentationStatePM = clientDolphin.getAt(PMDescription.APPLICATION_STATE.pmId(BasePmMixin.APPLICATION_STATE_ID));
 
         JFXBinder.bind(ApplicationStateAtt.LANGUAGE.name()).of(presentationStatePM).using(value -> value.equals(Language.GERMAN.name())).to("disable").of(germanButton);
         JFXBinder.bind(ApplicationStateAtt.LANGUAGE.name()).of(presentationStatePM).using(value -> value.equals(Language.ENGLISH.name())).to("disable").of(englishButton);

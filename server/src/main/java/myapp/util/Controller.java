@@ -6,20 +6,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import org.opendolphin.core.Attribute;
 import org.opendolphin.core.BaseAttribute;
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.DTO;
-import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.Slot;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -66,12 +62,16 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
     /**
      * Everything that needs to be done to get a controller that is ready to be used in the application.
      */
-    protected void initializeController() {
+    private void initializeController() {
+        initializeSelf();
         setupModelStoreListener();
         setupValueChangedListener();
         setupBinding();
         setDefaultValues();
         rebaseAll();
+    }
+
+    protected void initializeSelf() {
     }
 
     /**
@@ -117,7 +117,17 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
      */
     protected ServerPresentationModel createPM(PMDescription pmDescription, DTO dto) {
         long id = entityID(dto);
+        dto.getSlots().addAll(createAllSlots(pmDescription, false, false));
+
         return getServerDolphin().presentationModel(pmDescription.pmId(id), pmDescription.getName(), dto);
+    }
+
+    protected ServerPresentationModel createPM(PMDescription pmDescription, long id, boolean createLabelSlot) {
+        List<Slot> allSlots = createAllSlots(pmDescription, true, createLabelSlot);
+
+        return getServerDolphin().presentationModel(pmDescription.pmId(id),
+                                                    pmDescription.getName(),
+                                                    new DTO(allSlots));
     }
 
     /**
@@ -125,15 +135,30 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
      * AttributeDescription of the given PMDescription
      *
      * @param pmDescription the description that's used to create a new PresentationModel
-     * @param pmId the id of the PresententationModel
+     * @param id the id of the PresententationModel
      * @return a new PresentationModel instance
      */
-    protected ServerPresentationModel createProxyPM(PMDescription pmDescription, String pmId) {
-        List<Slot> proxySlots = createProxySlots(pmDescription);
+    protected ServerPresentationModel createProxyPM(PMDescription pmDescription, long id) {
+        List<Slot> proxySlots = createAllSlots(pmDescription, true, true);
 
-        return getServerDolphin().presentationModel(pmId,
+        return getServerDolphin().presentationModel(pmDescription.pmId(id),
                                                     "Proxy:" + pmDescription.getName(),
                                                     new DTO(proxySlots));
+    }
+
+    protected ServerPresentationModel createNullObjectPM(PMDescription description, long id) {
+        String                 pmId       = description.pmId(id);
+        List<Slot> slots = createAllSlots(description, true, false);
+        ServerPresentationModel nullObjectPM = getServerDolphin().presentationModel(pmId, "NullObject:" + description.getName(), new DTO(slots));
+
+        nullObjectPM.getAttributes().stream()
+                    .filter(serverAttribute -> AdditionalTag.READ_ONLY.equals(serverAttribute.getTag()))
+                    .forEach(serverAttribute -> {
+                        serverAttribute.setValue(true);
+                        serverAttribute.rebase();
+                    });
+
+        return nullObjectPM;
     }
 
     /**
@@ -178,6 +203,20 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
                        .collect(Collectors.toList());
     }
 
+    protected List<DTO> allDTOs(PMDescription pmDescription){
+        List<ServerPresentationModel> pms = getServerDolphin().findAllPresentationModelsByType(pmDescription.getName());
+
+        return pms.stream()
+                       .map(pm -> pm.getAttributes().stream()
+                                    .filter(attr -> Tag.VALUE.equals(attr.getTag()))
+                                    .map(att -> new Slot(att.getPropertyName(),
+                                                         att.getValue(),
+                                                         att.getQualifier()))
+                                    .collect(Collectors.toList()))
+                       .map(DTO::new)
+                       .collect(Collectors.toList());
+    }
+
     @Override
     public ServerPresentationModel get(PMDescription pmDescription, long id) {
         return get(pmDescription.pmId(id));
@@ -190,14 +229,14 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
 
 
     protected void translate(ServerPresentationModel proxyPM, Language language) {
-        ResourceBundle        bundle     = getResourceBundle(proxyPM, language);
-        List<ServerAttribute> attributes = proxyPM.getAttributes();
-        attributes.stream()
-                  .filter(att -> att.getTag().equals(Tag.LABEL))
-                  .forEach(att -> {
-                      String propertyName = att.getPropertyName();
-                      att.setValue(translate(bundle, propertyName));
-                  });
+        ResourceBundle bundle = getResourceBundle(proxyPM, language);
+
+        proxyPM.getAttributes().stream()
+               .filter(att -> att.getTag().equals(Tag.LABEL))
+               .forEach(att -> {
+                   String propertyName = att.getPropertyName();
+                   att.setValue(translate(bundle, propertyName));
+               });
     }
 
     protected void translate(PresentationModelVeneer veneer, Language language) {
@@ -241,22 +280,26 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
                                  .collect(Collectors.toList());
     }
 
-    private List<Slot> createProxySlots(PMDescription pmDescription) {
+    private List<Slot> createAllSlots(PMDescription pmDescription, boolean createvValueSlot, boolean createLabelSlot) {
         List<Slot> slots = new ArrayList<>();
 
         Arrays.stream(pmDescription.getAttributeDescriptions()).forEach(att -> {
-            slots.add(new Slot(att.name(), getInitialValue(att)     , null                , Tag.VALUE));
-            slots.add(new Slot(att.name(), att.name().toLowerCase() , att.labelQualifier(), Tag.LABEL));
-            slots.add(new Slot(att.name(), att.getValueType().name(), null                , Tag.VALUE_TYPE));
-            slots.add(new Slot(att.name(), false                    , null                , Tag.MANDATORY));
-            slots.add(new Slot(att.name(), true                     , null                , AdditionalTag.VALID));
-            slots.add(new Slot(att.name(), null                     , null                , AdditionalTag.VALIDATION_MESSAGE));
-            slots.add(new Slot(att.name(), false                    , null                , AdditionalTag.READ_ONLY));
-            slots.add(new Slot(att.name(), ""                       , null                , AdditionalTag.USER_FACING_STRING));
+            if(createvValueSlot){
+                slots.add(new Slot(att.name(), getInitialValue(att), null, Tag.VALUE));
+            }
+            if(createLabelSlot){
+                slots.add(new Slot(att.name(), att.name().toLowerCase(), att.labelQualifier(), Tag.LABEL));
+            }
+            slots.add(new Slot(att.name(), att.getValueType().name() , null, Tag.VALUE_TYPE));
+            slots.add(new Slot(att.name(), att.isInitiallyMandatory(), null, Tag.MANDATORY));
+            slots.add(new Slot(att.name(), true                      , null, AdditionalTag.VALID));
+            slots.add(new Slot(att.name(), "OK!"                     , null, AdditionalTag.VALIDATION_MESSAGE));
+            slots.add(new Slot(att.name(), att.isInitiallyReadOnly() , null, AdditionalTag.READ_ONLY));
         });
 
         return slots;
     }
+
 
     @Override
     public Dolphin getDolphin() {

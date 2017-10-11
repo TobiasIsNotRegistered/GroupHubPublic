@@ -1,11 +1,14 @@
 package myapp.util.veneer;
 
+import java.lang.reflect.Field;
+
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.PresentationModel;
+
+import myapp.util.AttributeDescription;
 
 /**
  * Capturing the essentials of a veneer: it has a backing presentation model as an immutable object state.
@@ -34,12 +37,32 @@ public class PresentationModelVeneer {
         return dirty;
     }
 
-    public void rebase(){
-       pm.rebase();
+    public void rebase() {
+        pm.rebase();
     }
 
-    public void reset(){
+    public void reset() {
         pm.reset();
+    }
+
+    public AttributeFX getAttribute(AttributeDescription attributeDescription) {
+        Field[] fields = getClass().getDeclaredFields();
+
+        for (Field f : fields) {
+            if (AttributeFX.class.isAssignableFrom(f.getType())) {
+                try {
+                    AttributeFX attr = (AttributeFX) f.get(this);
+                    if (attr.isBuildFor(attributeDescription)) {
+                        return attr;
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException(e);
+                }
+
+            }
+        }
+
+        return null;
     }
 
     @Override

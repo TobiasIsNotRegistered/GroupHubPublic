@@ -11,11 +11,9 @@ import myapp.util.veneer.dolphinattributeadapter.StringAttributeAdapter;
  * @author Dieter Holz
  */
 public class StringAttributeFX extends AttributeFX<StringProperty, String> {
-    private static final String REGEX = ".*";
 
     public StringAttributeFX(PresentationModel pm, AttributeDescription attributeDescription) {
         super(pm, attributeDescription,
-              REGEX,
               new StringAttributeAdapter(valueAttribute(pm, attributeDescription)));
     }
 

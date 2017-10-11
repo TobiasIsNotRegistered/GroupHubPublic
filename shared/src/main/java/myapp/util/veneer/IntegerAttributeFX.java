@@ -11,25 +11,30 @@ import myapp.util.veneer.dolphinattributeadapter.IntegerAttributeAdapter;
  * @author Dieter Holz
  */
 public class IntegerAttributeFX extends AttributeFX<IntegerProperty, Number> {
-    private static final String REGEX          = "[+-]?[\\d']{1,14}";
-    private static final String FORMAT_PATTERN = "%,d";
+    private static final int    NOT_SET = -1;
+    private static final String UNKNOWN = "-";
 
     public IntegerAttributeFX(PresentationModel pm, AttributeDescription attributeDescription) {
         super(pm, attributeDescription,
-              REGEX,
               new IntegerAttributeAdapter(valueAttribute(pm, attributeDescription)));
     }
 
     @Override
     protected String format(Number value) {
-        if(value == null){
+        if (value == null) {
             return "";
         }
-        return String.format(DEFAULT_LOCALE, FORMAT_PATTERN, value.intValue());
+        if (value.intValue() == NOT_SET) {
+            return UNKNOWN;
+        }
+        return String.format(DEFAULT_LOCALE, getFormatPattern(), value.intValue());
     }
 
     @Override
     protected Integer convertToValue(String string) {
+        if (string == null || string.isEmpty() || string.equals(UNKNOWN)) {
+            return NOT_SET;
+        }
         return Integer.parseInt(string.replaceAll("'", ""));
     }
 

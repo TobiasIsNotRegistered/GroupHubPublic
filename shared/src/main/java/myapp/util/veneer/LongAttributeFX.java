@@ -11,12 +11,10 @@ import myapp.util.veneer.dolphinattributeadapter.LongAttributeAdapter;
  * @author Dieter Holz
  */
 public class LongAttributeFX extends AttributeFX<LongProperty, Number> {
-    private static final String REGEX          = "[+-]?[\\d']+";
-    private static final String FORMAT_PATTERN = "%,d";
+    private static final String REGEX = "[+-]?[\\d']+";
 
     public LongAttributeFX(PresentationModel pm, AttributeDescription attributeDescription) {
         super(pm, attributeDescription,
-              REGEX,
               new LongAttributeAdapter(valueAttribute(pm, attributeDescription)));
     }
 
@@ -25,7 +23,7 @@ public class LongAttributeFX extends AttributeFX<LongProperty, Number> {
         if(value == null){
             return "";
         }
-        return String.format(DEFAULT_LOCALE, FORMAT_PATTERN, value.longValue());
+        return String.format(DEFAULT_LOCALE, getFormatPattern(), value.longValue());
     }
 
     @Override

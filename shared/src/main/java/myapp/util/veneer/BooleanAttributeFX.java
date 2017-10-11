@@ -13,11 +13,9 @@ import myapp.util.veneer.dolphinattributeadapter.BooleanAttributeAdapter;
 public class BooleanAttributeFX extends AttributeFX<BooleanProperty, Boolean> {
     private static final String TRUE  = "true";
     private static final String FALSE = "false";
-    private static final String REGEX = "((?i)" + TRUE + "){1}|((?i)" + FALSE + "){1}";
 
     public BooleanAttributeFX(PresentationModel pm, AttributeDescription attributeDescription) {
         super(pm, attributeDescription,
-              REGEX,
               new BooleanAttributeAdapter(valueAttribute(pm, attributeDescription)));
     }
 

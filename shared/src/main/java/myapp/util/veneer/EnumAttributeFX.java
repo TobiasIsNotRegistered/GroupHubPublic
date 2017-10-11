@@ -15,13 +15,10 @@ import myapp.util.veneer.dolphinattributeadapter.EnumAttributeAdapter;
  */
 public class EnumAttributeFX<T extends Enum<T>> extends AttributeFX<ObjectProperty<T>, T> {
 
-    private final Class<T> clazz;
-
     public EnumAttributeFX(PresentationModel pm, AttributeDescription attributeDescription, Class<T> clazz) {
         super(pm, attributeDescription,
               createRegex(clazz),
               new EnumAttributeAdapter<>(valueAttribute(pm, attributeDescription), clazz));
-        this.clazz = clazz;
     }
 
     @Override
@@ -31,7 +28,8 @@ public class EnumAttributeFX<T extends Enum<T>> extends AttributeFX<ObjectProper
 
     @Override
     protected T convertToValue(String string) {
-        return Enum.valueOf(clazz, string);
+        EnumAttributeAdapter<T> adapter = (EnumAttributeAdapter<T>) valueProperty();
+        return Enum.valueOf(adapter.getClazz(), string);
     }
 
 
