@@ -2,6 +2,8 @@ package myapp.util.veneer;
 
 import java.lang.reflect.Field;
 
+import java.util.Arrays;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 

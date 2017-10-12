@@ -1,4 +1,4 @@
-#OpenDolphin Template
+# OpenDolphin Template
 
 This project provides a template for using [OpenDolphin](http://open-dolphin.org) 
 
@@ -7,7 +7,7 @@ This project provides a template for using [OpenDolphin](http://open-dolphin.org
 - with JavaFX as the client technology
 - with Gradle for build automation.
 
-##Quick Setup
+## Quick Setup
 
 Prerequisite: Java 8 or above.
 
@@ -19,7 +19,7 @@ It contains the following modules/projects
 - shared: this one is totally optional. If used, it typically contains shared constants between client and server.
 - combined: combines all the above in one JVM for starting with the in-memory configuration for develop/test/debug.
 
-##Application introduction
+## Application introduction
 
 We implement a very simple application that contains only a simple header section and an editor area
 with three labels, two text fields to show the various binding options.
@@ -49,7 +49,7 @@ With a server running, you can start a client. Run from the client-module
 
     myapp.MyRemoteStarter
     
-##More Info
+## More Info
 
 This has only been a first glance into the way that OpenDolphin operates.
 
