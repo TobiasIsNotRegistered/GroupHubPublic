@@ -27,9 +27,7 @@ public class SomeRemoteService implements SomeService, DTOMixin {
         int    age      = r.nextInt(43);
         boolean isAdult = age >= 18;
         return new DTO(createSlot(PersonAtt.ID      , id     , id),
-                       createSlot(PersonAtt.NAME    , name   , id),
-                       createSlot(PersonAtt.AGE     , age    , id),
-                       createSlot(PersonAtt.IS_ADULT, isAdult, id));
+                       createSlot(PersonAtt.NAME    , name   , id));
     }
 
     @Override

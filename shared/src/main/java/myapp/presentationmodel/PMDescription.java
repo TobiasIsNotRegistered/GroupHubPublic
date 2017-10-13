@@ -1,7 +1,9 @@
 package myapp.presentationmodel;
 
 import myapp.presentationmodel.applicationstate.ApplicationStateAtt;
+import myapp.presentationmodel.participation.ParticipationAtt;
 import myapp.presentationmodel.person.PersonAtt;
+import myapp.presentationmodel.table.TableAtt;
 import myapp.util.AttributeDescription;
 
 /**
@@ -15,6 +17,8 @@ public enum PMDescription {
 
     //todo: add all application specific PMDescriptions
     PERSON("PersonPM", "PERSON", PersonAtt.values()),
+    TABLE("TablePM", "TABLE", TableAtt.values()),
+    PARTICIPATION("ParticipationPM" , "PARTICIPATION", ParticipationAtt.values()),
 
     // ApplicationState is always needed
     APPLICATION_STATE("ApplicationStatePM", null, ApplicationStateAtt.values());

@@ -1,4 +1,4 @@
-package myapp.presentationmodel.person;
+package myapp.presentationmodel.participation;
 
 import myapp.presentationmodel.PMDescription;
 import myapp.util.AttributeDescription;
@@ -7,14 +7,15 @@ import myapp.util.ValueType;
 /**
  * todo: Describe all your application specific PresentationModel-Attributes like this
  */
-public enum PersonAtt implements AttributeDescription {
+public enum ParticipationAtt implements AttributeDescription {
     ID(ValueType.ID),
-    NAME(ValueType.STRING),
-    CONTACT(ValueType.STRING);
+    KEY1(ValueType.ID),
+    KEY2(ValueType.ID),
+    COMMENT(ValueType.STRING);
 
     private final ValueType valueType;
 
-    PersonAtt(ValueType type) {
+    ParticipationAtt(ValueType type) {
         valueType = type;
     }
 
@@ -25,6 +26,6 @@ public enum PersonAtt implements AttributeDescription {
 
     @Override
     public PMDescription getPMDescription() {
-        return PMDescription.PERSON;
+        return PMDescription.PARTICIPATION;
     }
 }

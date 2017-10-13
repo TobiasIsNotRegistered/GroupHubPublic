@@ -3,12 +3,16 @@ package myapp.presentationmodel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import myapp.presentationmodel.participation.Participation;
+import myapp.presentationmodel.person.Person;
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 
 import myapp.presentationmodel.applicationstate.ApplicationState;
+import myapp.presentationmodel.table.Table;
 import myapp.presentationmodel.person.Person;
+import myapp.presentationmodel.participation.Participation;
 
 /**
  * @author Dieter Holz
@@ -24,6 +28,33 @@ public interface BasePmMixin {
     default Person getPersonProxy() {
         return new Person(getPersonProxyPM());
     }
+
+    /***********************/
+
+    long TABLE_PROXY_ID = -666L;
+
+    default BasePresentationModel getTableProxyPM() {
+        return (BasePresentationModel) getDolphin().getAt(PMDescription.TABLE.pmId(TABLE_PROXY_ID));
+    }
+
+    default Table getTableProxy() {
+        return new Table(getTableProxyPM());
+    }
+
+
+    /***********************/
+
+    long PARTICIPATION_PROXY_ID = -555L;
+
+    default BasePresentationModel getParticipationProxyPM() {
+        return (BasePresentationModel) getDolphin().getAt(PMDescription.PARTICIPATION.pmId(PARTICIPATION_PROXY_ID));
+    }
+
+    default Participation getParticipationProxy() {
+        return new Participation(getParticipationProxyPM());
+    }
+
+    /***********************/
 
     // always needed
     long EMPTY_SELECTION_ID   = -1L;

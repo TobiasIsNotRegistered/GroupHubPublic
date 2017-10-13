@@ -18,6 +18,6 @@ public class Person extends PresentationModelVeneer {
 
     public final LongAttributeFX    id      = new LongAttributeFX(getPresentationModel()   , PersonAtt.ID);
     public final StringAttributeFX  name    = new StringAttributeFX(getPresentationModel() , PersonAtt.NAME);
-    public final IntegerAttributeFX age     = new IntegerAttributeFX(getPresentationModel(), PersonAtt.AGE);
-    public final BooleanAttributeFX isAdult = new BooleanAttributeFX(getPresentationModel(), PersonAtt.IS_ADULT);
+    public final StringAttributeFX  contact = new StringAttributeFX(getPresentationModel() , PersonAtt.CONTACT);
+
 }

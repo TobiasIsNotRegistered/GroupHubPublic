@@ -12,7 +12,7 @@ import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.ServerPresentationModel;
 
 import myapp.presentationmodel.PMDescription;
-import myapp.presentationmodel.person.Person;
+import myapp.presentationmodel.person.Table;
 import myapp.presentationmodel.person.PersonAtt;
 import myapp.service.SomeService;
 import myapp.util.DTOMixin;
@@ -45,7 +45,7 @@ public class PersonControllerTest {
 
         //when
         controller.initializeBasePMs();
-        Person p = controller.getPersonProxy();
+        Table p = controller.getPersonProxy();
 
         //then
         assertNotNull(p);
@@ -56,7 +56,7 @@ public class PersonControllerTest {
     public void testDirtyState(){
         //given
         controller.initializeBasePMs();
-        Person p = controller.getPersonProxy();
+        Table p = controller.getPersonProxy();
         String name = p.name.getValue();
 
         //when
@@ -71,7 +71,7 @@ public class PersonControllerTest {
     public void testLoadPerson(){
         //given
         controller.initializeBasePMs();
-        Person p = controller.getPersonProxy();
+        Table p = controller.getPersonProxy();
         p.name.setValue("bla");
 
         //when
@@ -92,7 +92,7 @@ public class PersonControllerTest {
     public void testSave(){
         //given
         controller.initializeBasePMs();
-        Person p = controller.getPersonProxy();
+        Table p = controller.getPersonProxy();
         controller.loadPerson();
 
         p.name.setValue("abc");

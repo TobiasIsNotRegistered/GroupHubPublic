@@ -2,6 +2,7 @@ package myapp.controller;
 
 import java.util.List;
 
+import myapp.presentationmodel.person.Person;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -9,7 +10,6 @@ import org.opendolphin.core.server.comm.ActionRegistry;
 
 import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
-import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.person.PersonCommands;
 import myapp.service.SomeService;
 import myapp.util.Controller;
@@ -33,7 +33,7 @@ class PersonController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        registry.register(PersonCommands.LOAD_SOME_PERSON, ($, $$) -> loadPerson());
+        registry.register(PersonCommands.LOAD_PERSON, ($, $$) -> loadPerson());
         registry.register(PersonCommands.SAVE            , ($, $$) -> save());
         registry.register(PersonCommands.RESET           , ($, $$) -> reset(PMDescription.PERSON));
     }
