@@ -1,11 +1,15 @@
-# OpenDolphin Template
+# GroupHub alias Tischpolka 🍽
 
-This project provides a template for using [OpenDolphin](http://open-dolphin.org) 
+This project provides a simple solution for finding eating comrades.
 
 - with plain Java 
 - with a simple Servlet started through Jetty
 - with JavaFX as the client technology
 - with Gradle for build automation.
+
+## Authors
+* Tobias Sigel 🎈
+* Mario Winiker 🌸
 
 ## Quick Setup
 
