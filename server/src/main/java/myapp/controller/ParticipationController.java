@@ -39,7 +39,7 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     protected void initializeBasePMs() {
-        ServerPresentationModel pm = createProxyPM(PMDescription.PERSON, PERSON_PROXY_ID);
+        ServerPresentationModel pm = createProxyPM(PMDescription.PARTICIPATION, PARTICIPATION_PROXY_ID);
 
         participationProxy = new Participation(pm);
     }
@@ -55,7 +55,7 @@ class ParticipationController extends Controller implements BasePmMixin {
     }
 
     ServerPresentationModel loadParticipation() {
-        DTO dto = service.loadSomeEntity();
+        DTO dto = service.loadParticipation();
         ServerPresentationModel pm = createPM(PMDescription.PARTICIPATION, dto);
 
         participationProxy.getPresentationModel().syncWith(pm);

@@ -56,7 +56,7 @@ class PersonController extends Controller implements BasePmMixin {
     }
 
     ServerPresentationModel loadPerson() {
-        DTO dto = service.loadSomeEntity();
+        DTO dto = service.loadPerson();
         ServerPresentationModel pm = createPM(PMDescription.PERSON, dto);
 
         personProxy.getPresentationModel().syncWith(pm);

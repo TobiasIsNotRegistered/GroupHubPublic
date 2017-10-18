@@ -29,6 +29,7 @@ public class MyAppView extends Application implements BasePmMixin {
 
     private void buildUI(Stage stage) {
         Pane root   = new SimplePane(clientDolphin);
+        //Pane root = new RootPane(clientDolphin);
         Scene scene = new Scene(root);
 
         stage.setScene(scene);

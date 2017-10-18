@@ -55,7 +55,7 @@ class TableController extends Controller implements BasePmMixin {
     }
 
     ServerPresentationModel loadTable() {
-        DTO dto = service.loadSomeEntity();
+        DTO dto = service.loadTable();
         ServerPresentationModel pm = createPM(PMDescription.TABLE, dto);
 
         tableProxy.getPresentationModel().syncWith(pm);
