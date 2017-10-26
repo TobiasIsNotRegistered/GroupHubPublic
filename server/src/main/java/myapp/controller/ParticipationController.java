@@ -4,8 +4,10 @@ import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.participation.ParticipationCommands;
+import myapp.presentationmodel.person.PersonCommands;
 import myapp.service.SomeService;
 import myapp.util.Controller;
+import myapp.util.veneer.PresentationModelVeneer;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -32,7 +34,7 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        registry.register(ParticipationCommands.LOAD_PARTICIPATION   , ($, $$) -> loadParticipation());
+        //registry.register(ParticipationCommands.LOAD_PARTICIPATION   , ($, $$) -> loadParticipation();
         registry.register(ParticipationCommands.SAVE                 , ($, $$) -> save());
         registry.register(ParticipationCommands.RESET                , ($, $$) -> reset(PMDescription.PARTICIPATION));
     }
@@ -54,13 +56,15 @@ class ParticipationController extends Controller implements BasePmMixin {
         getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(participationProxy, newValue));
     }
 
-    ServerPresentationModel loadParticipation() {
-        DTO dto = service.loadParticipation();
+    ServerPresentationModel loadParticipation(PresentationModelVeneer person, PresentationModelVeneer table) {
+
+        DTO dto = service.loadParticipation(person, table);
         ServerPresentationModel pm = createPM(PMDescription.PARTICIPATION, dto);
 
         participationProxy.getPresentationModel().syncWith(pm);
 
         return pm;
+
     }
 
     void save() {

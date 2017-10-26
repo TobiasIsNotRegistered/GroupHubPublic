@@ -2,6 +2,7 @@ package myapp.service;
 
 import java.util.List;
 
+import myapp.util.veneer.PresentationModelVeneer;
 import org.opendolphin.core.server.DTO;
 
 /**
@@ -10,9 +11,15 @@ import org.opendolphin.core.server.DTO;
  * todo: replace this with your application specific service and add similar services as needed
  */
 public interface SomeService {
-    DTO loadPerson();
-    DTO loadTable();
-    DTO loadParticipation();
+    DTO loadRandomPerson();
+    DTO loadNextPerson();
+    List<DTO> loadAllPersons();
+
+    DTO loadRandomTable();
+    DTO loadNextTable();
+    List<DTO> loadAllTables();
+
+    DTO loadParticipation(PresentationModelVeneer person, PresentationModelVeneer table);
 
     void save(List<DTO> dtos);
 

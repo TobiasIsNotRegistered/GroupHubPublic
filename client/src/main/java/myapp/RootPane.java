@@ -50,7 +50,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     // clientDolphin is the single entry point to the PresentationModel-Layer
     private final ClientDolphin clientDolphin;
 
-    private Label headerLabel;
+
 
     private Label idLabel;
     private Label idField;
@@ -96,8 +96,6 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     @Override
     public void initializeParts() {
-        headerLabel = new Label();
-        headerLabel.getStyleClass().add("heading");
 
         idLabel = new Label();
         idField = new Label();
@@ -124,9 +122,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         grow.setHgrow(Priority.ALWAYS);
 
         getColumnConstraints().setAll(new ColumnConstraints(), grow);
-        setVgrow(headerLabel, Priority.ALWAYS);
 
-        add(headerLabel    , 0, 0, 5, 1);
         add(idLabel        , 0, 1);
         add(idField        , 1, 1, 4, 1);
         add(nameLabel      , 0, 2);
@@ -146,7 +142,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         ApplicationState ps = getApplicationState();
         saveButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.SAVE));
         resetButton.setOnAction(  $ -> clientDolphin.send(PersonCommands.RESET));
-      //  nextButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.LOAD_SOME_PERSON));
+        nextButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.LOAD_NEXT_PERSON));
 
         germanButton.setOnAction( $ -> ps.language.setValue(Language.GERMAN));
         englishButton.setOnAction($ -> ps.language.setValue(Language.ENGLISH));

@@ -32,7 +32,7 @@ class TableController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        registry.register(TableCommands.LOAD_TABLE, ($, $$) -> loadTable());
+        registry.register(TableCommands.LOAD_RANDOM_TABLE, ($, $$) -> loadRandomTable());
         registry.register(TableCommands.SAVE            , ($, $$) -> save());
         registry.register(TableCommands.RESET           , ($, $$) -> reset(PMDescription.TABLE));
     }
@@ -54,8 +54,8 @@ class TableController extends Controller implements BasePmMixin {
         getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(tableProxy, newValue));
     }
 
-    ServerPresentationModel loadTable() {
-        DTO dto = service.loadTable();
+    ServerPresentationModel loadRandomTable() {
+        DTO dto = service.loadRandomTable();
         ServerPresentationModel pm = createPM(PMDescription.TABLE, dto);
 
         tableProxy.getPresentationModel().syncWith(pm);
