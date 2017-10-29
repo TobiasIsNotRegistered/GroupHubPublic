@@ -19,7 +19,8 @@ public class Reception extends DolphinServerAction {
 
     public void registerIn(ActionRegistry registry) {
         // todo register all your controllers here.
-        //getServerDolphin().register(new PersonController(myService));
+        //solange mit der PersonProxy im UI verwendet wird, muss auch der PersonController registriert sein.
+        getServerDolphin().register(new PersonController(myService));
         getServerDolphin().register(new TableController(myService));
         //getServerDolphin().register(new ParticipationController(myService));
 
