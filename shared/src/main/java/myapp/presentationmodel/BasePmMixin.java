@@ -65,6 +65,7 @@ public interface BasePmMixin {
     }
 
     default ApplicationState getApplicationState() {
+
         return new ApplicationState(getApplicationStatePM());
     }
 
@@ -76,6 +77,7 @@ public interface BasePmMixin {
                                            event -> {
                                                BasePresentationModel pm = (BasePresentationModel) event.getPresentationModel();
                                                Veneer                v  = veneerFactory.create(pm);
+
                                                if (event.getType().equals(ModelStoreEvent.Type.ADDED)) {
                                                    list.add(v);
                                                } else {
@@ -84,6 +86,7 @@ public interface BasePmMixin {
                                            });
         return list;
     }
+
 
     @FunctionalInterface
     interface VeneerFactory<V> {

@@ -1,17 +1,17 @@
 package myapp;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import myapp.presentationmodel.table.Table;
+import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.binding.Converter;
 import org.opendolphin.binding.JFXBinder;
 import org.opendolphin.core.Attribute;
@@ -34,6 +34,8 @@ import myapp.util.ViewMixin;
 import myapp.util.veneer.AttributeFX;
 import myapp.util.veneer.BooleanAttributeFX;
 
+
+
 /**
  * Implementation of the view details, event handling, and binding.
  *
@@ -50,7 +52,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     // clientDolphin is the single entry point to the PresentationModel-Layer
     private final ClientDolphin clientDolphin;
 
-
+    private ObservableList data = FXCollections.observableArrayList();
 
     private Label idLabel;
     private Label idField;
@@ -72,6 +74,13 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     private final Person personProxy;
 
+    private ScrollPane scrollPane;
+    /*
+    private TableView table;
+    private TableColumn<Table, String> id_column;
+    private TableColumn<Table, String> description_column;
+    */
+
     //always needed
     private final ApplicationState ps;
 
@@ -79,6 +88,10 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         this.clientDolphin = clientDolphin;
         ps = getApplicationState();
         personProxy = getPersonProxy();
+
+        //data = observableList(PMDescription.TABLE, pm -> new Table(pm));
+
+        //scrollPane.setContent();
 
         init();
     }
@@ -114,14 +127,26 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         nextButton    = new Button("Next");
         germanButton  = new Button("German");
         englishButton = new Button("English");
+
+        /*
+        table = new TableView();
+        id_column = new TableColumn("ID");
+        id_column.setCellValueFactory(cell -> cell.getValue().id.valueProperty().asString());
+        description_column = new TableColumn("Description");
+        description_column.setCellValueFactory(cell -> cell.getValue().description.valueProperty());
+
+        table.setItems(data);
+        */
+
     }
 
     @Override
     public void layoutParts() {
         ColumnConstraints grow = new ColumnConstraints();
         grow.setHgrow(Priority.ALWAYS);
-
         getColumnConstraints().setAll(new ColumnConstraints(), grow);
+
+       // table.getColumns().addAll(id_column, description_column);
 
         add(idLabel        , 0, 1);
         add(idField        , 1, 1, 4, 1);
@@ -131,6 +156,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         add(ageField       , 1, 3, 4, 1);
         add(isAdultLabel   , 0, 4);
         add(isAdultCheckBox, 1, 4, 4, 1);
+        //add(table,           0, 6, 5, 5);
         add(new HBox(5, saveButton, resetButton, nextButton, germanButton, englishButton), 0, 5, 5, 1);
     }
 
@@ -265,5 +291,10 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         else {
             node.getStyleClass().remove(style);
         }
+    }
+
+    private void createTableContainer(Object x){
+
+        TextField description = new TextField();
     }
 }

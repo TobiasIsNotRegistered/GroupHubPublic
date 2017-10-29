@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.client.ClientDolphin;
 
@@ -23,8 +24,13 @@ public class MyAppView extends Application implements BasePmMixin {
     public void start(Stage stage) throws Exception {
         clientDolphin.send(BasicCommands.INITIALIZE_BASE_PMS,
              $ -> buildUI(stage));
+
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
              $ -> clientDolphin.send(PersonCommands.LOAD_NEXT_PERSON));
+        /*
+        clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
+                $ -> clientDolphin.send(TableCommands.LOAD_ALL_TABLES));
+         */
     }
 
     private void buildUI(Stage stage) {
