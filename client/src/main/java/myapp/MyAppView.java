@@ -26,7 +26,7 @@ public class MyAppView extends Application implements BasePmMixin {
              $ -> buildUI(stage));
 
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
-             $ -> clientDolphin.send(PersonCommands.LOAD_NEXT_PERSON));
+             $ -> clientDolphin.send(PersonCommands.LOAD_ALL_PERSONS));
         /*
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
                 $ -> clientDolphin.send(TableCommands.LOAD_ALL_TABLES));

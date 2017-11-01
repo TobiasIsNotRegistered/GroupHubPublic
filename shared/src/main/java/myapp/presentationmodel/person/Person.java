@@ -9,7 +9,7 @@ import myapp.util.veneer.StringAttributeFX;
 import myapp.util.veneer.PresentationModelVeneer;
 
 /**
- * @author Dieter Holz
+ * @author Tobias Sigel
  */
 public class Person extends PresentationModelVeneer {
     public Person(BasePresentationModel pm) {
@@ -18,6 +18,6 @@ public class Person extends PresentationModelVeneer {
 
     public final LongAttributeFX    id      = new LongAttributeFX(getPresentationModel()   , PersonAtt.ID);
     public final StringAttributeFX  name    = new StringAttributeFX(getPresentationModel() , PersonAtt.NAME);
-    public final StringAttributeFX  contact = new StringAttributeFX(getPresentationModel() , PersonAtt.CONTACT);
+//    public final StringAttributeFX  contact = new StringAttributeFX(getPresentationModel() , PersonAtt.CONTACT);
 
 }

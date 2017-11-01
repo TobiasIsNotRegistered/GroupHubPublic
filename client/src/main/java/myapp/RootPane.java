@@ -5,19 +5,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 
 import myapp.presentationmodel.table.Table;
 import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.binding.Converter;
 import org.opendolphin.binding.JFXBinder;
-import org.opendolphin.core.Attribute;
-import org.opendolphin.core.Dolphin;
-import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.Tag;
+import org.opendolphin.core.*;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 
@@ -75,11 +69,14 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     private final Person personProxy;
 
     private ScrollPane scrollPane;
+
     /*
     private TableView table;
     private TableColumn<Table, String> id_column;
     private TableColumn<Table, String> description_column;
     */
+
+    private VBox containerBox;
 
     //always needed
     private final ApplicationState ps;
@@ -89,9 +86,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         ps = getApplicationState();
         personProxy = getPersonProxy();
 
-        //data = observableList(PMDescription.TABLE, pm -> new Table(pm));
-
-        //scrollPane.setContent();
+        //data = observableList(PMDescription.PERSON, pm -> new Person(pm));
 
         init();
     }
@@ -128,15 +123,17 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         germanButton  = new Button("German");
         englishButton = new Button("English");
 
-        /*
-        table = new TableView();
-        id_column = new TableColumn("ID");
-        id_column.setCellValueFactory(cell -> cell.getValue().id.valueProperty().asString());
-        description_column = new TableColumn("Description");
-        description_column.setCellValueFactory(cell -> cell.getValue().description.valueProperty());
+        //table = new TableView();
+        // id_column = new TableColumn("ID");
+        // id_column.setCellValueFactory(cell -> cell.getValue().id.valueProperty().asString());
+        //description_column = new TableColumn("Description");
+        //description_column.setCellValueFactory(cell -> cell.getValue().description.valueProperty());
 
-        table.setItems(data);
-        */
+        //table.setItems(data);
+        scrollPane = new ScrollPane();
+        containerBox = new VBox();
+
+        scrollPane.setContent(containerBox);
 
     }
 
@@ -146,7 +143,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         grow.setHgrow(Priority.ALWAYS);
         getColumnConstraints().setAll(new ColumnConstraints(), grow);
 
-       // table.getColumns().addAll(id_column, description_column);
+        //table.getColumns().addAll(id_column, description_column);
 
         add(idLabel        , 0, 1);
         add(idField        , 1, 1, 4, 1);
@@ -156,7 +153,8 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         add(ageField       , 1, 3, 4, 1);
         add(isAdultLabel   , 0, 4);
         add(isAdultCheckBox, 1, 4, 4, 1);
-        //add(table,           0, 6, 5, 5);
+        //add(table          , 0, 6, 5, 5);
+        add(scrollPane     , 0,   11, 5, 5);
         add(new HBox(5, saveButton, resetButton, nextButton, germanButton, englishButton), 0, 5, 5, 1);
     }
 
@@ -187,6 +185,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         personProxy.name.mandatoryProperty().addListener((observable, oldValue, newValue)    -> updateStyle(nameField      , MANDATORY_STYLE, newValue));
       // personProxy.age.mandatoryProperty().addListener((observable, oldValue, newValue)     -> updateStyle(ageField       , MANDATORY_STYLE, newValue));
       // personProxy.isAdult.mandatoryProperty().addListener((observable, oldValue, newValue) -> updateStyle(isAdultCheckBox, MANDATORY_STYLE, newValue));
+
     }
 
     @Override
@@ -262,6 +261,12 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
         saveButton.disableProperty().bind(personProxy.dirtyProperty().not());
         resetButton.disableProperty().bind(personProxy.dirtyProperty().not());
+
+        getDolphin().addModelStoreListener(PMDescription.PERSON.getName(), event -> {
+            if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
+                containerBox.getChildren().add(new Container(event));
+            }
+        });
     }
 
     private void setupBinding(Label label, TextField field, AttributeFX attribute) {
@@ -292,9 +297,26 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
             node.getStyleClass().remove(style);
         }
     }
+}
 
-    private void createTableContainer(Object x){
+class Container extends HBox{
 
-        TextField description = new TextField();
+    TextField name = new TextField("name");
+    TextField id = new TextField("id");
+    //TextField age = new TextField("age");
+
+    public Container(ModelStoreEvent event) {
+        Person x = new Person((BasePresentationModel) event.getPresentationModel());
+        id.textProperty().bind(x.id.valueProperty().asString());
+
+        //much easier to bind StringProperties bidirectional
+        name.textProperty().bindBidirectional(x.name.valueProperty());
+        //userFacingStringProperty muss man kennen!
+        //age.textProperty().bindBidirectional(x.age.userFacingStringProperty());
+
+        this.getChildren().addAll(id, name);
     }
+
+    public Container getContainer(){return this;}
+
 }

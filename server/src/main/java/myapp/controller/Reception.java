@@ -22,7 +22,7 @@ public class Reception extends DolphinServerAction {
         //solange mit der PersonProxy im UI verwendet wird, muss auch der PersonController registriert sein.
         getServerDolphin().register(new PersonController(myService));
         getServerDolphin().register(new TableController(myService));
-        //getServerDolphin().register(new ParticipationController(myService));
+        getServerDolphin().register(new ParticipationController(myService));
 
         //always needed
         getServerDolphin().register(new ApplicationStateController());

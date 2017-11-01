@@ -18,8 +18,8 @@ public class SomeRemoteService implements SomeService,DTOMixin {
 
     int index_table = 0;
     int index_person = 0;
-
-    int id = 0;
+    int id_person = 0;
+    int id_table = 0;
 
 
     String[] persons = {"Neil Amstrong"  , "Michael Collins" , "Edwin Aldrin",      // Apollo 11
@@ -76,7 +76,7 @@ public class SomeRemoteService implements SomeService,DTOMixin {
         List<DTO> list = new ArrayList<>();
 
         for(String x : persons){
-            list.add(loadNextTable());
+            list.add(loadNextPerson());
         }
 
         return list;
@@ -94,15 +94,15 @@ public class SomeRemoteService implements SomeService,DTOMixin {
 
     public DTO loadNextPerson(){
         if(index_person >= persons.length) {index_person = 0;}
+        id_person++;
 
         Random r = new Random();
         String person = persons[index_person];
 
         index_person++;
 
-        id++;
-
-        return new DTO(createSlot(PersonAtt.ID, id, id), createSlot(PersonAtt.NAME, person, id));
+        return new DTO( createSlot(PersonAtt.ID, id_person, id_person),
+                        createSlot(PersonAtt.NAME, person, id_person));
 
     }
 
