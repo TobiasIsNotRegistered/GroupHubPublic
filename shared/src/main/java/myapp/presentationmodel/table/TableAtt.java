@@ -10,7 +10,8 @@ import myapp.util.ValueType;
 public enum TableAtt implements AttributeDescription {
     ID(ValueType.ID),
     DESCRIPTION(ValueType.STRING),
-    MAXSIZE(ValueType.INT);
+    MAXSIZE(ValueType.INT),
+    TITLE(ValueType.STRING);
 
     private final ValueType valueType;
 

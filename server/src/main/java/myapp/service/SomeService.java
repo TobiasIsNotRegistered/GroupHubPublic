@@ -11,11 +11,10 @@ import org.opendolphin.core.server.DTO;
  * todo: replace this with your application specific service and add similar services as needed
  */
 public interface SomeService {
-    DTO loadRandomPerson();
+
     DTO loadNextPerson();
     List<DTO> loadAllPersons();
 
-    DTO loadRandomTable();
     DTO loadNextTable();
     List<DTO> loadAllTables();
 

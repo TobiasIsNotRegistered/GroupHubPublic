@@ -70,12 +70,6 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     private ScrollPane scrollPane;
 
-    /*
-    private TableView table;
-    private TableColumn<Table, String> id_column;
-    private TableColumn<Table, String> description_column;
-    */
-
     private VBox containerBox;
 
     //always needed
@@ -85,8 +79,6 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         this.clientDolphin = clientDolphin;
         ps = getApplicationState();
         personProxy = getPersonProxy();
-
-        //data = observableList(PMDescription.PERSON, pm -> new Person(pm));
 
         init();
     }
@@ -123,18 +115,10 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         germanButton  = new Button("German");
         englishButton = new Button("English");
 
-        //table = new TableView();
-        // id_column = new TableColumn("ID");
-        // id_column.setCellValueFactory(cell -> cell.getValue().id.valueProperty().asString());
-        //description_column = new TableColumn("Description");
-        //description_column.setCellValueFactory(cell -> cell.getValue().description.valueProperty());
-
-        //table.setItems(data);
         scrollPane = new ScrollPane();
         containerBox = new VBox();
 
         scrollPane.setContent(containerBox);
-
     }
 
     @Override
@@ -143,7 +127,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         grow.setHgrow(Priority.ALWAYS);
         getColumnConstraints().setAll(new ColumnConstraints(), grow);
 
-        //table.getColumns().addAll(id_column, description_column);
+        scrollPane.setPrefViewportHeight(250);
 
         add(idLabel        , 0, 1);
         add(idField        , 1, 1, 4, 1);
@@ -153,7 +137,6 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         add(ageField       , 1, 3, 4, 1);
         add(isAdultLabel   , 0, 4);
         add(isAdultCheckBox, 1, 4, 4, 1);
-        //add(table          , 0, 6, 5, 5);
         add(scrollPane     , 0,   11, 5, 5);
         add(new HBox(5, saveButton, resetButton, nextButton, germanButton, englishButton), 0, 5, 5, 1);
     }
@@ -262,7 +245,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
         saveButton.disableProperty().bind(personProxy.dirtyProperty().not());
         resetButton.disableProperty().bind(personProxy.dirtyProperty().not());
 
-        getDolphin().addModelStoreListener(PMDescription.PERSON.getName(), event -> {
+        getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
                 containerBox.getChildren().add(new Container(event));
             }
@@ -301,20 +284,27 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
 class Container extends HBox{
 
-    TextField name = new TextField("name");
-    TextField id = new TextField("id");
-    //TextField age = new TextField("age");
+    TextField table_title = new TextField("Title");
+    TextField table_description = new TextField("Description");
+    TextField table_id = new TextField("ID");
+    TextField table_maxsize = new TextField("MaxSize");
 
     public Container(ModelStoreEvent event) {
-        Person x = new Person((BasePresentationModel) event.getPresentationModel());
-        id.textProperty().bind(x.id.valueProperty().asString());
+        //Person x = new Person((BasePresentationModel) event.getPresentationModel());
+        Table x = new Table((BasePresentationModel) event.getPresentationModel());
 
+        table_title.textProperty().bind(x.title.valueProperty());
+        table_id.textProperty().bind(x.id.valueProperty().asString());
         //much easier to bind StringProperties bidirectional
-        name.textProperty().bindBidirectional(x.name.valueProperty());
+        table_description.textProperty().bindBidirectional(x.description.valueProperty());
         //userFacingStringProperty muss man kennen!
-        //age.textProperty().bindBidirectional(x.age.userFacingStringProperty());
+        table_maxsize.textProperty().bind(x.maxsize.valueProperty().asString());
 
-        this.getChildren().addAll(id, name);
+        this.getChildren().addAll(table_id, table_title, table_description, table_maxsize);
+    }
+
+    public void layoutContainer(){
+
     }
 
     public Container getContainer(){return this;}

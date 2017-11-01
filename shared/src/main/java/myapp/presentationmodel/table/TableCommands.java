@@ -8,6 +8,7 @@ package myapp.presentationmodel.table;
 public interface TableCommands {
 	String LOAD_RANDOM_TABLE  = unique("loadRandomTable");
 	String LOAD_ALL_TABLES = unique("loadAllTables");
+	String LOAD_NEXT_TABLE = unique("loadNextTable");
 	String SAVE             = unique("save");
 	String RESET            = unique("reset");
 

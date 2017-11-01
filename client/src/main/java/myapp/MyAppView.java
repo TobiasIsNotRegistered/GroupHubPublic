@@ -27,15 +27,14 @@ public class MyAppView extends Application implements BasePmMixin {
 
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
              $ -> clientDolphin.send(PersonCommands.LOAD_ALL_PERSONS));
-        /*
+
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
                 $ -> clientDolphin.send(TableCommands.LOAD_ALL_TABLES));
-         */
+
     }
 
     private void buildUI(Stage stage) {
         Pane root   = new RootPane(clientDolphin);
-        //Pane root = new RootPane(clientDolphin);
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
