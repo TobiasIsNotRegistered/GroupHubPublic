@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.participation.ParticipationAtt;
 import myapp.presentationmodel.table.TableAtt;
 import myapp.util.veneer.PresentationModelVeneer;
@@ -17,11 +18,11 @@ public class SomeRemoteService implements SomeService,DTOMixin {
 
     int index_table = 0;
     int index_person = 0;
+    int index_participation = 0;
 
     int id_person = 0;
     int id_table = 0;
-
-
+    int id_participation = 0;
 
     String[] person_names = {"Neil Amstrong"  , "Michael Collins" , "Edwin Aldrin",      // Apollo 11
                       "Charles Conrad" , "Richard Gordon"  , "Alan Bean",         // Apollo 12
@@ -38,10 +39,25 @@ public class SomeRemoteService implements SomeService,DTOMixin {
     String[] table_title =         {"Segelfliegen", "Kletterkurs", "Projektarbeit OpenDolphin", "Burger-Essen bei Manito", "Flohmarkt am Rhein",
                                     "Kino im Standbildformat", "Klavier-Arabesque für Gehörlose", " In Windeseile: Neuer Flaschenzug schnell erklärt",
                                     "Eisenmangel: Luftschmieden mit echten Hämmern", "Tag der offen Tür: Gefängnis Willisau"};
-    String[] table_max_sizes =     new String[table_title.length];
 
+    //generates as many random participations as there are Strings in person_names[]
+    public List<DTO> loadAllParticipations(){
+        List<DTO> list = new ArrayList<>();
 
-    String[] participations = {""};
+        for(String x : person_names){
+
+            Random r = new Random();
+
+            list.add(new DTO(   createSlot(ParticipationAtt.ID, id_participation, id_participation),
+                                createSlot(ParticipationAtt.KEY_PERSON, r.nextInt(person_names.length), id_participation),
+                                createSlot(ParticipationAtt.KEY_TABLE, r.nextInt(table_title.length), id_participation),
+                                createSlot(ParticipationAtt.COMMENT, "TestKommentar", id_participation)
+
+            ));
+        }
+
+        return list;
+    }
 
     public List<DTO> loadAllTables(){
 
@@ -62,7 +78,7 @@ public class SomeRemoteService implements SomeService,DTOMixin {
         Random r = new Random();
         String description = table_descriptions[index_table];
         //int max_size = Integer.valueOf(table_max_sizes[index_table]);
-        int max_size = 10;
+        int max_size = r.nextInt(20);
         String title = table_title[index_table];
 
         index_table++;
@@ -96,16 +112,6 @@ public class SomeRemoteService implements SomeService,DTOMixin {
                         createSlot(PersonAtt.NAME, person, id_person));
     }
 
-    public DTO loadParticipation(PresentationModelVeneer person, PresentationModelVeneer table){
-        long id = createNewId();
-
-        Random r        = new Random();
-
-        return new DTO( createSlot(ParticipationAtt.ID      , id     , id),
-                        createSlot(ParticipationAtt.KEY1    , person_names[r.nextInt(person_names.length)]   , id),
-                        createSlot(ParticipationAtt.KEY2    , table_descriptions[r.nextInt(table_descriptions.length)]   , id),
-                        createSlot(ParticipationAtt.COMMENT    , "ParticipationCommentTest"   , id));
-    }
 
     //*****AUXILIARY*******
 

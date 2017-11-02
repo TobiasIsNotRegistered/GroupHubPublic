@@ -18,7 +18,7 @@ public interface SomeService {
     DTO loadNextTable();
     List<DTO> loadAllTables();
 
-    DTO loadParticipation(PresentationModelVeneer person, PresentationModelVeneer table);
+    List<DTO> loadAllParticipations();
 
     void save(List<DTO> dtos);
 

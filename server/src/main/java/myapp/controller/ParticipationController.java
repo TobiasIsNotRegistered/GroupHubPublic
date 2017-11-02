@@ -34,7 +34,7 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        //registry.register(ParticipationCommands.LOAD_PARTICIPATION   , ($, $$) -> loadParticipation();
+        registry.register(ParticipationCommands.LOAD_ALL_PARTICIPATIONS  , ($, $$) -> loadAllParticipations());
         registry.register(ParticipationCommands.SAVE                 , ($, $$) -> save());
         registry.register(ParticipationCommands.RESET                , ($, $$) -> reset(PMDescription.PARTICIPATION));
     }
@@ -56,14 +56,12 @@ class ParticipationController extends Controller implements BasePmMixin {
         getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(participationProxy, newValue));
     }
 
-    ServerPresentationModel loadParticipation(PresentationModelVeneer person, PresentationModelVeneer table) {
+    void loadAllParticipations() {
+        List<DTO> list = service.loadAllParticipations();
 
-        DTO dto = service.loadParticipation(person, table);
-        ServerPresentationModel pm = createPM(PMDescription.PARTICIPATION, dto);
-
-        participationProxy.getPresentationModel().syncWith(pm);
-
-        return pm;
+        for(DTO x : list){
+            createPM(PMDescription.PARTICIPATION, x);
+        }
 
     }
 

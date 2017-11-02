@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import myapp.presentationmodel.participation.ParticipationCommands;
 import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.client.ClientDolphin;
@@ -30,6 +31,9 @@ public class MyAppView extends Application implements BasePmMixin {
 
         clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
                 $ -> clientDolphin.send(TableCommands.LOAD_ALL_TABLES));
+
+        clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
+                $ -> clientDolphin.send(ParticipationCommands.LOAD_ALL_PARTICIPATIONS));
 
     }
 

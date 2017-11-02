@@ -11,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 
+import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.binding.Converter;
 import org.opendolphin.binding.JFXBinder;
@@ -47,7 +48,8 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
     private final ClientDolphin clientDolphin;
     private Person personProxy;
 
-    private ObservableList data = FXCollections.observableArrayList();
+    private ObservableList data_persons = FXCollections.observableArrayList();
+    private ObservableList data_participations = FXCollections.observableArrayList();
 
     private Button saveButton;
     private Button resetButton;
@@ -144,9 +146,32 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
     @Override
     public void setupValueChangedListeners() {
+
+        //listen if Tables have been added to the modelStore
         getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
                 containerBox.getChildren().add(new TableContainer(event));
+            }
+            if(event.getType().equals(ModelStoreEvent.Type.REMOVED)){
+               // containerBox.getChildren().remove(new Person((BasePresentationModel)event.getPresentationModel()));
+            }
+        });
+
+        //listen if Participations have been added to the modelStore
+        getDolphin().addModelStoreListener(PMDescription.PARTICIPATION.getName(), event -> {
+            if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
+                Participation x = new Participation((BasePresentationModel)event.getPresentationModel());
+
+                for(Node z : containerBox.getChildren()) {
+                    z = (TableContainer)z;
+
+                }
+
+                getDolphin().findAllPresentationModelsByType(PMDescription.PARTICIPATION.getName());
+
+            }
+            if(event.getType().equals(ModelStoreEvent.Type.REMOVED)){
+                // containerBox.getChildren().remove(new Person((BasePresentationModel)event.getPresentationModel()));
             }
         });
     }

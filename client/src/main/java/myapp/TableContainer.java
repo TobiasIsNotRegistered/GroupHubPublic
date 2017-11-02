@@ -1,17 +1,28 @@
 package myapp;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import myapp.presentationmodel.participation.Participation;
+import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.table.Table;
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.ModelStoreEvent;
 
+import java.util.ArrayList;
+
+/* Used to display Table-Data. Each instance represent a PM from the modelstore */
+
 class TableContainer extends GridPane {
     //FXML: Google "Scene-Builder" for point&click UI-creation
+
+    static ArrayList<TableContainer> data;
+
+    int id;
+    ObservableList<Person> participations;
 
     Label label_table_title;
     Label table_title;
@@ -39,10 +50,13 @@ class TableContainer extends GridPane {
         layoutContainer();
         addStyleClasses();
         addChildren();
+
+        data.add(this);
     }
 
     public void bindProperties(ModelStoreEvent event){
         Table x = new Table((BasePresentationModel) event.getPresentationModel());
+        this.id = (int)(x.id.getValue());
         table_title.textProperty().bind(x.title.valueProperty());
         table_id.textProperty().bind(x.id.valueProperty().asString());
         //much easier to bind StringProperties bidirectional
@@ -66,6 +80,8 @@ class TableContainer extends GridPane {
         info_container = new VBox(15);
         margin_insets = new Insets(10,10,0,10);
         list_participators = new ListView();
+        participations = FXCollections.observableArrayList();
+
     }
 
     public void layoutContainer(){
@@ -85,7 +101,7 @@ class TableContainer extends GridPane {
     }
 
     public void addStyleClasses() {
-        this.getStylesheets().addAll("/myapp/myApp.css/", "/myapp/material-fx-v0_3.css");
+        this.getStylesheets().addAll( "/myapp/material-fx-v0_3.css", "/myapp/myApp.css/");
         //every TableContainer-Instance will be displayed as a card
         this.getStyleClass().add("card");
         //setting the title lable as a card-title
@@ -93,6 +109,7 @@ class TableContainer extends GridPane {
         table_description.getStyleClass().add("card-subtitle");
         table_maxsize.getStyleClass().add("control-label.text");
         table_id.getStyleClass().add("control-label.text");
+
     }
 
     public void addChildren(){
@@ -104,6 +121,14 @@ class TableContainer extends GridPane {
         add(list_participators,           1, 0, 1, 1);
     }
 
+    public void setParticipators(){
+        list_participators.setItems(participations);
+    }
+
     public TableContainer getContainer(){return this;}
+
+    public static TableContainer getContainerByID(int id){
+        return data.get(id);
+    }
 
 }

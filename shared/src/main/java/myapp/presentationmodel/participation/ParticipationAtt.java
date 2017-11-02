@@ -9,8 +9,8 @@ import myapp.util.ValueType;
  */
 public enum ParticipationAtt implements AttributeDescription {
     ID(ValueType.ID),
-    KEY1(ValueType.ID),
-    KEY2(ValueType.ID),
+    KEY_PERSON(ValueType.ID),
+    KEY_TABLE(ValueType.ID),
     COMMENT(ValueType.STRING);
 
     private final ValueType valueType;

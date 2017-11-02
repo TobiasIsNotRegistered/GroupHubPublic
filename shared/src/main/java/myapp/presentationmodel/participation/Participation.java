@@ -14,8 +14,8 @@ public class Participation extends PresentationModelVeneer {
     }
 
     public final LongAttributeFX    id        = new LongAttributeFX(getPresentationModel()   , ParticipationAtt.ID);
-    public final LongAttributeFX    key1      = new LongAttributeFX(getPresentationModel()   , ParticipationAtt.KEY1);
-    public final LongAttributeFX    key2      = new LongAttributeFX(getPresentationModel()   , ParticipationAtt.KEY2);
+    public final LongAttributeFX    keyTable      = new LongAttributeFX(getPresentationModel()   , ParticipationAtt.KEY_TABLE);
+    public final LongAttributeFX    keyPerson      = new LongAttributeFX(getPresentationModel()   , ParticipationAtt.KEY_PERSON);
     public final StringAttributeFX  comment   = new StringAttributeFX(getPresentationModel() , ParticipationAtt.COMMENT);
 
 }
