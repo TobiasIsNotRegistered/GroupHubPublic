@@ -31,7 +31,7 @@ public class SomeRemoteService implements SomeService,DTOMixin {
                       "John Young"     , "Thomas Mattingly", "Charles Duke",      // Apollo 16
                       "Eugene Cernan"  , "Ronald Evans"    , "Harrison Schmitt"}; // Apollo 17
 
-    String[] table_descriptions = {"Fliegen sie mit uns ins neue Auffangsegel am Zürichsee. Aufprall garantiert.", "Dieter, Dierk & Mario, was wollen Sie mehr? Delfine bieten übrigens eine hervorragende Proteinquelle.", "Sehen Sie hier zu, wie Burger bei Manito essen gehen. Garantiert noch nie geschehen!",
+    String[] table_descriptions = {"Fliegen sie mit uns ins neue Auffangsegel am Zürichsee. Aufprall garantiert.", "Der Name ist Programm! Lernen Sie mit uns, die Karriereleiter zu meistern.", "Dieter, Dierk & Mario, was wollen Sie mehr? Delfine bieten übrigens eine hervorragende Proteinquelle.", "Sehen Sie hier zu, wie Burger bei Manito essen gehen. Garantiert noch nie geschehen!",
                                     "Emsige Flöhe bauen Rhein einen Markt. Treffpunkt beim Zirkusdompteur.", "Kino mit nur einem Bild: Monokultur wächst stetig.", "Können Sie mich hören? Wenn ja, dann sind Sie hier garantiert falsch!", "Mut zum Sprung: der kürzeste Weg, einen Flaschenzug zu erklären. Zug nicht inbegriffen.",
                                     "Wollten Sie schon immer das Schmiedhandwerk erlernen, aber möchten ihre Wohnung nicht mit schlechten Beispielen vollstopfen? Hier sind Sie richtig.",
                                     "Gewinnspiel: je flüchtiger, desto besser. Entkommen Sie dem Stress des Alltages und fühlen Sie sich durch einen Gefängnisbesuch besser!"};
@@ -59,7 +59,6 @@ public class SomeRemoteService implements SomeService,DTOMixin {
 
         if(index_table >= table_descriptions.length) {index_table = 0;}
 
-        long id = index_table;
         Random r = new Random();
         String description = table_descriptions[index_table];
         //int max_size = Integer.valueOf(table_max_sizes[index_table]);
@@ -67,11 +66,12 @@ public class SomeRemoteService implements SomeService,DTOMixin {
         String title = table_title[index_table];
 
         index_table++;
+        id_table++;
 
-        return new DTO( createSlot(TableAtt.ID, id, id),
-                        createSlot(TableAtt.TITLE, title, id),
-                        createSlot(TableAtt.DESCRIPTION, description, id),
-                        createSlot(TableAtt.MAXSIZE, max_size, id));
+        return new DTO( createSlot(TableAtt.ID, id_table, id_table),
+                        createSlot(TableAtt.TITLE, title, id_table),
+                        createSlot(TableAtt.DESCRIPTION, description, id_table),
+                        createSlot(TableAtt.MAXSIZE, max_size, id_table));
     }
 
     public List<DTO> loadAllPersons(){

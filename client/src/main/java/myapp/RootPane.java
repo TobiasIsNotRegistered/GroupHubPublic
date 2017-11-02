@@ -5,9 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 
-import myapp.presentationmodel.table.Table;
 import myapp.presentationmodel.table.TableCommands;
 import org.opendolphin.binding.Converter;
 import org.opendolphin.binding.JFXBinder;
@@ -20,24 +23,21 @@ import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.applicationstate.ApplicationState;
 import myapp.presentationmodel.applicationstate.ApplicationStateAtt;
 import myapp.presentationmodel.person.Person;
-import myapp.presentationmodel.person.PersonAtt;
 import myapp.presentationmodel.person.PersonCommands;
-import myapp.util.AdditionalTag;
 import myapp.util.Language;
 import myapp.util.ViewMixin;
 import myapp.util.veneer.AttributeFX;
 import myapp.util.veneer.BooleanAttributeFX;
 
 
-
 /**
- * Implementation of the view details, event handling, and binding.
+ * root Pane for more sophisticated container instances.
  *
- * @author Dieter Holz
+ * @author Tobias Sigel
  *
- * todo : Replace it with your application UI
+ *
  */
-class RootPane extends GridPane implements ViewMixin, BasePmMixin {
+class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
     private static final String DIRTY_STYLE     = "dirty";
     private static final String INVALID_STYLE   = "invalid";
@@ -45,20 +45,9 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     // clientDolphin is the single entry point to the PresentationModel-Layer
     private final ClientDolphin clientDolphin;
+    private Person personProxy;
 
     private ObservableList data = FXCollections.observableArrayList();
-
-    private Label idLabel;
-    private Label idField;
-
-    private Label     nameLabel;
-    private TextField nameField;
-
-    private Label     ageLabel;
-    private TextField ageField;
-
-    private Label    isAdultLabel;
-    private CheckBox isAdultCheckBox;
 
     private Button saveButton;
     private Button resetButton;
@@ -66,11 +55,12 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     private Button germanButton;
     private Button englishButton;
 
-    private final Person personProxy;
-
+    //Used to display containerBox, may be unnecessary
     private ScrollPane scrollPane;
-
+    //lists the instances of TableContainer
     private VBox containerBox;
+    private HBox buttonBox;
+    private Label title;
 
     //always needed
     private final ApplicationState ps;
@@ -90,24 +80,13 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     @Override
     public void initializeSelf() {
-        addStylesheetFiles("/fonts/fonts.css", "/myapp/myApp.css");
-        getStyleClass().add("rootPane");
+        addStylesheetFiles("/myapp/myApp.css", "/myapp/material-fx-v0_3.css");
+        this.getStyleClass().add("root");
+
     }
 
     @Override
     public void initializeParts() {
-
-        idLabel = new Label();
-        idField = new Label();
-
-        nameLabel = new Label();
-        nameField = new TextField();
-
-        ageLabel = new Label();
-        ageField = new TextField();
-
-        isAdultLabel    = new Label();
-        isAdultCheckBox = new CheckBox();
 
         saveButton    = new Button("Save");
         resetButton   = new Button("Reset");
@@ -117,39 +96,47 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
         scrollPane = new ScrollPane();
         containerBox = new VBox();
+        buttonBox = new HBox(5);
 
         scrollPane.setContent(containerBox);
+
+        title = new Label("GroupHubFX");
     }
 
     @Override
     public void layoutParts() {
-        ColumnConstraints grow = new ColumnConstraints();
-        grow.setHgrow(Priority.ALWAYS);
-        getColumnConstraints().setAll(new ColumnConstraints(), grow);
 
-        scrollPane.setPrefViewportHeight(250);
+        AnchorPane.setTopAnchor(    scrollPane, 80.00);
+        AnchorPane.setBottomAnchor( scrollPane, 20.00);
+        AnchorPane.setRightAnchor(  scrollPane, 20.00);
+        AnchorPane.setLeftAnchor(   scrollPane, 20.00);
 
-        add(idLabel        , 0, 1);
-        add(idField        , 1, 1, 4, 1);
-        add(nameLabel      , 0, 2);
-        add(nameField      , 1, 2, 4, 1);
-        add(ageLabel       , 0, 3);
-        add(ageField       , 1, 3, 4, 1);
-        add(isAdultLabel   , 0, 4);
-        add(isAdultCheckBox, 1, 4, 4, 1);
-        add(scrollPane     , 0,   11, 5, 5);
-        add(new HBox(5, saveButton, resetButton, nextButton, germanButton, englishButton), 0, 5, 5, 1);
+        AnchorPane.setTopAnchor(    buttonBox, 20.00);
+        AnchorPane.setRightAnchor(  buttonBox, 20.00);
+        AnchorPane.setLeftAnchor(   buttonBox, 20.00);
+
+        AnchorPane.setRightAnchor(title, 20.00);
+        AnchorPane.setTopAnchor(title, 20.00);
+
+
+        buttonBox.getChildren().addAll(saveButton, resetButton, nextButton, germanButton, englishButton);
+
+        this.getChildren().addAll(buttonBox, scrollPane, title);
+        //affects the contents of scrollpane, which is containerBox. containerBox has Children of the type TableContainer.
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        this.setPrefSize(1000,600);
     }
 
     @Override
     public void setupEventHandlers() {
-        // all events either send a command (needs to be registered in a controller on the server side)
-        // or set a value on an Attribute
 
         ApplicationState ps = getApplicationState();
         saveButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.SAVE));
         resetButton.setOnAction(  $ -> clientDolphin.send(PersonCommands.RESET));
-        nextButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.LOAD_NEXT_PERSON));
+        nextButton.setOnAction(   $ -> clientDolphin.send(TableCommands.LOAD_NEXT_TABLE));
 
         germanButton.setOnAction( $ -> ps.language.setValue(Language.GERMAN));
         englishButton.setOnAction($ -> ps.language.setValue(Language.ENGLISH));
@@ -157,18 +144,11 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
     @Override
     public void setupValueChangedListeners() {
-        personProxy.name.dirtyProperty().addListener((observable, oldValue, newValue)    -> updateStyle(nameField      , DIRTY_STYLE, newValue));
-       // personProxy.age.dirtyProperty().addListener((observable, oldValue, newValue)     -> updateStyle(ageField       , DIRTY_STYLE, newValue));
-       // personProxy.isAdult.dirtyProperty().addListener((observable, oldValue, newValue) -> updateStyle(isAdultCheckBox, DIRTY_STYLE, newValue));
-
-        personProxy.name.validProperty().addListener((observable, oldValue, newValue)    -> updateStyle(nameField      , INVALID_STYLE, !newValue));
-      //  personProxy.age.validProperty().addListener((observable, oldValue, newValue)     -> updateStyle(ageField       , INVALID_STYLE, !newValue));
-      //  personProxy.isAdult.validProperty().addListener((observable, oldValue, newValue) -> updateStyle(isAdultCheckBox, INVALID_STYLE, !newValue));
-
-        personProxy.name.mandatoryProperty().addListener((observable, oldValue, newValue)    -> updateStyle(nameField      , MANDATORY_STYLE, newValue));
-      // personProxy.age.mandatoryProperty().addListener((observable, oldValue, newValue)     -> updateStyle(ageField       , MANDATORY_STYLE, newValue));
-      // personProxy.isAdult.mandatoryProperty().addListener((observable, oldValue, newValue) -> updateStyle(isAdultCheckBox, MANDATORY_STYLE, newValue));
-
+        getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
+            if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
+                containerBox.getChildren().add(new TableContainer(event));
+            }
+        });
     }
 
     @Override
@@ -194,9 +174,9 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
       //         .to("text")
       //         .of(headerLabel);
 
-        JFXBinder.bind(PersonAtt.NAME.name(), Tag.LABEL).of(personProxyPM).to("text").of(nameLabel);
-        JFXBinder.bind(PersonAtt.NAME.name()).of(personProxyPM).to("text").of(nameField);
-        JFXBinder.bind("text").of(nameField).to(PersonAtt.NAME.name()).of(personProxyPM);
+       //JFXBinder.bind(PersonAtt.NAME.name(), Tag.LABEL).of(personProxyPM).to("text").of(nameLabel);
+       //JFXBinder.bind(PersonAtt.NAME.name()).of(personProxyPM).to("text").of(nameField);
+       //JFXBinder.bind("text").of(nameField).to(PersonAtt.NAME.name()).of(personProxyPM);
 
        // JFXBinder.bind(PersonAtt.AGE.name(), Tag.LABEL).of(personProxyPM).to("text").of(ageLabel);
        // JFXBinder.bind(PersonAtt.AGE.name()).of(personProxyPM).to("text").of(ageField);
@@ -232,11 +212,7 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     private void setupBindings_VeneerBased(){
         //headerLabel.textProperty().bind(personProxy.name.valueProperty().concat(", ").concat(personProxy.age.valueProperty()));
 
-        idLabel.textProperty().bind(personProxy.id.labelProperty());
-        idField.textProperty().bind(personProxy.id.valueProperty().asString());
-
-        setupBinding(nameLabel   , nameField      , personProxy.name);
-       // setupBinding(ageLabel    , ageField       , personProxy.age);
+        // setupBinding(ageLabel    , ageField       , personProxy.age);
        // setupBinding(isAdultLabel, isAdultCheckBox, personProxy.isAdult);
 
         germanButton.disableProperty().bind(Bindings.createBooleanBinding(() -> Language.GERMAN.equals(ps.language.getValue()), ps.language.valueProperty()));
@@ -244,12 +220,6 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
 
         saveButton.disableProperty().bind(personProxy.dirtyProperty().not());
         resetButton.disableProperty().bind(personProxy.dirtyProperty().not());
-
-        getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
-            if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
-                containerBox.getChildren().add(new Container(event));
-            }
-        });
     }
 
     private void setupBinding(Label label, TextField field, AttributeFX attribute) {
@@ -282,31 +252,3 @@ class RootPane extends GridPane implements ViewMixin, BasePmMixin {
     }
 }
 
-class Container extends HBox{
-
-    TextField table_title = new TextField("Title");
-    TextField table_description = new TextField("Description");
-    TextField table_id = new TextField("ID");
-    TextField table_maxsize = new TextField("MaxSize");
-
-    public Container(ModelStoreEvent event) {
-        //Person x = new Person((BasePresentationModel) event.getPresentationModel());
-        Table x = new Table((BasePresentationModel) event.getPresentationModel());
-
-        table_title.textProperty().bind(x.title.valueProperty());
-        table_id.textProperty().bind(x.id.valueProperty().asString());
-        //much easier to bind StringProperties bidirectional
-        table_description.textProperty().bindBidirectional(x.description.valueProperty());
-        //userFacingStringProperty muss man kennen!
-        table_maxsize.textProperty().bind(x.maxsize.valueProperty().asString());
-
-        this.getChildren().addAll(table_id, table_title, table_description, table_maxsize);
-    }
-
-    public void layoutContainer(){
-
-    }
-
-    public Container getContainer(){return this;}
-
-}

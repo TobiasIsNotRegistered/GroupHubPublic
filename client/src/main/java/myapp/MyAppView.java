@@ -39,6 +39,7 @@ public class MyAppView extends Application implements BasePmMixin {
 
         stage.setScene(scene);
         stage.titleProperty().bind(getApplicationState().applicationTitle.labelProperty());
+        //stage.setFullScreen(true); // useful for presentation, looks great
 
         stage.show();
     }
