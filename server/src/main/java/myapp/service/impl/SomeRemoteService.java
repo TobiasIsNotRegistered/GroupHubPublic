@@ -45,13 +45,17 @@ public class SomeRemoteService implements SomeService,DTOMixin {
         List<DTO> list = new ArrayList<>();
 
         for(String x : person_names){
-
+            id_participation++;
             Random r = new Random();
 
-            list.add(new DTO(   createSlot(ParticipationAtt.ID, id_participation, id_participation),
-                                createSlot(ParticipationAtt.KEY_PERSON, r.nextInt(person_names.length), id_participation),
-                                createSlot(ParticipationAtt.KEY_TABLE, r.nextInt(table_title.length), id_participation),
-                                createSlot(ParticipationAtt.COMMENT, "TestKommentar", id_participation)
+
+            System.out.println("Server: KEY_PERSON: \t" + r.nextInt(person_names.length) );
+            System.out.println("Server: KEY_TABLE: \t" +  r.nextInt(table_title.length) );
+
+            list.add(new DTO(   createSlot(ParticipationAtt.ID,             id_participation,                   id_participation),
+                                createSlot(ParticipationAtt.KEY_PERSON, ((long) r.nextInt(person_names.length)),     id_participation),
+                                createSlot(ParticipationAtt.KEY_TABLE, ((long) r.nextInt(table_title.length)),      id_participation),
+                                createSlot(ParticipationAtt.COMMENT,  "TestKommentar",                     id_participation)
 
             ));
         }

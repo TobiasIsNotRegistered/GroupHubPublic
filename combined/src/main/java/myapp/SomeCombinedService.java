@@ -50,7 +50,7 @@ public class SomeCombinedService implements SomeService, DTOMixin {
                 createSlot(TableAtt.MAXSIZE, 10, id));
     }
 
-    //loops over the data
+    //loops over the all_instances
     public DTO loadNextTable() {
 
         if(index_table >= tables.length) {index_table = 0;}

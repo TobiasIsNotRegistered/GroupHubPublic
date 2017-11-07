@@ -46,10 +46,9 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
     // clientDolphin is the single entry point to the PresentationModel-Layer
     private final ClientDolphin clientDolphin;
-    private Person personProxy;
 
-    private ObservableList data_persons = FXCollections.observableArrayList();
-    private ObservableList data_participations = FXCollections.observableArrayList();
+    private ObservableList<Person> data_persons = FXCollections.observableArrayList();
+    private ObservableList<Participation> data_participations = FXCollections.observableArrayList();
 
     private Button saveButton;
     private Button resetButton;
@@ -70,7 +69,6 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
     RootPane(ClientDolphin clientDolphin) {
         this.clientDolphin = clientDolphin;
         ps = getApplicationState();
-        personProxy = getPersonProxy();
 
         init();
     }
@@ -147,31 +145,80 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
     @Override
     public void setupValueChangedListeners() {
 
+        data_persons = observableList(PMDescription.PERSON, pm -> new Person(pm));
+
         //listen if Tables have been added to the modelStore
         getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
-                containerBox.getChildren().add(new TableContainer(event));
+                TableContainer newInstance = new TableContainer((BasePresentationModel) event.getPresentationModel());
+
+                containerBox.getChildren().add(newInstance);
             }
             if(event.getType().equals(ModelStoreEvent.Type.REMOVED)){
-               // containerBox.getChildren().remove(new Person((BasePresentationModel)event.getPresentationModel()));
+               // do good;
+            }
+        });
+
+        //listen if Persons have been added to the Modelstore
+
+        getDolphin().addModelStoreListener(PMDescription.PERSON.getName(), event -> {
+            if(event.getType().equals(ModelStoreEvent.Type.ADDED)) {
+                //Person p = new Person((BasePresentationModel)event.getPresentationModel());
+
+            }
+            if(event.getType().equals(ModelStoreEvent.Type.REMOVED)) {
+
             }
         });
 
         //listen if Participations have been added to the modelStore
+
         getDolphin().addModelStoreListener(PMDescription.PARTICIPATION.getName(), event -> {
+
+            Participation participation_proxy = new Participation((BasePresentationModel)event.getPresentationModel());
+
+            System.out.println("keyTable: \t" + participation_proxy.keyTable.getValue());
+            System.out.println("keyPerson: \t" + participation_proxy.keyPerson.getValue());
+            System.out.println("ID: \t \t" + participation_proxy.id.getValue());
+            System.out.println("Kommentar: \t" + participation_proxy.comment.getValue());
+
+            //check for each added Participation
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
-                Participation x = new Participation((BasePresentationModel)event.getPresentationModel());
+                //loop through all childs of containerBox
+                for(Node tableProxy:containerBox.getChildren()) {
+                    TableContainer table_proxy = (TableContainer) tableProxy;
+                    //check if keyTable of Participation equals the ID of the current tableContainer
+                    if(participation_proxy.keyTable.getValue() == table_proxy.thisTable.id.getValue()){
+                        //TODO: Ask about findPMByID, doesn't work as expected
+                        //Person personProxy = new Person((BasePresentationModel)getDolphin().findPresentationModelById((Long.toString(participation_proxy.keyPerson.getValue()))));
 
-                for(Node z : containerBox.getChildren()) {
-                    z = (TableContainer)z;
-
+                        //if participation contains a valid table ID, loop through all Persons to find the corresponding participator
+                        for(Person personProxy : data_persons){
+                            //if found...
+                            if(personProxy.id.getValue() == participation_proxy.keyPerson.getValue()){
+                                System.out.println("UniqueTestingString" + personProxy.name.getValue());
+                                //...add the guy to the list
+                                table_proxy.addParticipator(personProxy);
+                            }
+                        }
+                    }
                 }
 
-                getDolphin().findAllPresentationModelsByType(PMDescription.PARTICIPATION.getName());
+                //tableProxy.addParticipator(personProxy);
+/*
+                for(Node tableProxy:containerBox.getChildren()){
+                    TableContainer tc = (TableContainer)tableProxy;
+
+                    if (tc.thisTable.id.equals(participation_proxy.keyTable)){
+                        System.out.println(Integer.valueOf(Long.toString(participation_proxy.keyPerson.getValue())));
+                        tc.addParticipator(data_persons.get(Integer.valueOf(Long.toString(participation_proxy.keyPerson.getValue()))));
+               }
+
+               */
 
             }
             if(event.getType().equals(ModelStoreEvent.Type.REMOVED)){
-                // containerBox.getChildren().remove(new Person((BasePresentationModel)event.getPresentationModel()));
+                // do good;
             }
         });
     }
@@ -243,8 +290,8 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         germanButton.disableProperty().bind(Bindings.createBooleanBinding(() -> Language.GERMAN.equals(ps.language.getValue()), ps.language.valueProperty()));
         englishButton.disableProperty().bind(Bindings.createBooleanBinding(() -> Language.ENGLISH.equals(ps.language.getValue()), ps.language.valueProperty()));
 
-        saveButton.disableProperty().bind(personProxy.dirtyProperty().not());
-        resetButton.disableProperty().bind(personProxy.dirtyProperty().not());
+        //saveButton.disableProperty().bind(personProxy.dirtyProperty().not());
+        //resetButton.disableProperty().bind(personProxy.dirtyProperty().not());
     }
 
     private void setupBinding(Label label, TextField field, AttributeFX attribute) {

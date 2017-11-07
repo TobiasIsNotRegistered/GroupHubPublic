@@ -62,7 +62,6 @@ class ParticipationController extends Controller implements BasePmMixin {
         for(DTO x : list){
             createPM(PMDescription.PARTICIPATION, x);
         }
-
     }
 
     void save() {

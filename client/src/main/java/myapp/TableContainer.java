@@ -1,33 +1,32 @@
 package myapp;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.table.Table;
 import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.ModelStoreEvent;
+import org.opendolphin.core.client.ClientPresentationModel;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /* Used to display Table-Data. Each instance represent a PM from the modelstore */
 
 class TableContainer extends GridPane {
     //FXML: Google "Scene-Builder" for point&click UI-creation
 
-    static ArrayList<TableContainer> data;
-
-    int id;
-    ObservableList<Person> participations;
+    //used for easier access to this tableView's ID and the likes
+    Table thisTable;
 
     Label label_table_title;
     Label table_title;
 
-    Label label_table_description;
     TextArea table_description;
 
     Label label_table_id;
@@ -40,36 +39,27 @@ class TableContainer extends GridPane {
 
     Insets margin_insets;
 
-    Label label_list_participators;
-    ListView list_participators;
+    TableView tableView;
+    TableColumn<Person, String> name_column;
+    TableColumn<Participation, String> comment_column;
+    ObservableList participation_list;
 
-    public TableContainer(ModelStoreEvent event) {
+    public TableContainer(BasePresentationModel pm) {
+        thisTable = new Table(pm);
+
         //Reihenfolge zwingend: initialize, dann bind, sonst NullPointerException
         initializeChildren();
-        bindProperties(event);
+        bindProperties();
         layoutContainer();
         addStyleClasses();
         addChildren();
-
-        data.add(this);
     }
 
-    public void bindProperties(ModelStoreEvent event){
-        Table x = new Table((BasePresentationModel) event.getPresentationModel());
-        this.id = (int)(x.id.getValue());
-        table_title.textProperty().bind(x.title.valueProperty());
-        table_id.textProperty().bind(x.id.valueProperty().asString());
-        //much easier to bind StringProperties bidirectional
-        table_description.textProperty().bindBidirectional(x.description.valueProperty());
-        //userFacingStringProperty um andere ValueTypes als String darzustellen
-        table_maxsize.textProperty().bind(x.maxsize.valueProperty().asString());
-    }
+
 
     public void initializeChildren(){
         label_table_title = new Label("Titel: ");
         label_table_id = new Label("ID: ");
-        label_list_participators = new Label("Teilnehmer: ");
-        label_table_description = new Label("Beschreibung: ");
         label_table_maxsize = new Label("maximale Plätze: ");
 
         table_title         = new Label();
@@ -78,10 +68,13 @@ class TableContainer extends GridPane {
         table_maxsize       = new Label();
         meta_container = new HBox(15);
         info_container = new VBox(15);
-        margin_insets = new Insets(10,10,0,10);
-        list_participators = new ListView();
-        participations = FXCollections.observableArrayList();
 
+        margin_insets = new Insets(10,10,0,10);
+
+        participation_list = FXCollections.observableArrayList();
+        tableView = new TableView();
+        name_column = new TableColumn("Teilnehmer: ");
+        comment_column = new TableColumn<>("Kommentar: ");
     }
 
     public void layoutContainer(){
@@ -98,6 +91,9 @@ class TableContainer extends GridPane {
         table_description.setWrapText(true);
 
         info_container.setPadding(margin_insets);
+        name_column.setMinWidth(100);
+        comment_column.setMinWidth(100);
+
     }
 
     public void addStyleClasses() {
@@ -113,22 +109,33 @@ class TableContainer extends GridPane {
     }
 
     public void addChildren(){
-
+        tableView.getColumns().addAll(name_column, comment_column);
+        tableView.setItems(participation_list);
         meta_container.getChildren().addAll(label_table_id, table_id,label_table_maxsize, table_maxsize);
         info_container.getChildren().addAll(meta_container, table_title,table_description);
 
         add(info_container,     0, 0, 1, 1);
-        add(list_participators,           1, 0, 1, 1);
+        add(tableView,           1, 0, 1, 1);
     }
 
-    public void setParticipators(){
-        list_participators.setItems(participations);
+    public void bindProperties(){
+
+        table_title.textProperty().bind(thisTable.title.valueProperty());
+        table_id.textProperty().bind(thisTable.id.valueProperty().asString());
+        //much easier to bind StringProperties bidirectional
+        table_description.textProperty().bindBidirectional(thisTable.description.valueProperty());
+        //userFacingStringProperty um andere ValueTypes als String darzustellen
+        table_maxsize.textProperty().bind(thisTable.maxsize.valueProperty().asString());
+
+        name_column.setCellValueFactory(cell -> cell.getValue().name.valueProperty());
+
+    }
+
+    public void addParticipator(Person p){participation_list.add(p);
     }
 
     public TableContainer getContainer(){return this;}
 
-    public static TableContainer getContainerByID(int id){
-        return data.get(id);
-    }
+
 
 }
