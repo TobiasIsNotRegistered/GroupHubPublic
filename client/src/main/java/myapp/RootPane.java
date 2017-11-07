@@ -40,6 +40,9 @@ import myapp.util.veneer.BooleanAttributeFX;
  */
 class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
+    //TODO: Ask for UTF-8 Encoding or solution to evade wrong äöü displays
+    //TODO: Ask for server (?)
+
     private static final String DIRTY_STYLE     = "dirty";
     private static final String INVALID_STYLE   = "invalid";
     private static final String MANDATORY_STYLE = "mandatory";
@@ -118,6 +121,7 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         AnchorPane.setRightAnchor(title, 20.00);
         AnchorPane.setTopAnchor(title, 20.00);
 
+        title.setMinHeight(60);
 
         buttonBox.getChildren().addAll(saveButton, resetButton, nextButton, germanButton, englishButton);
 
@@ -177,10 +181,10 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
             Participation participation_proxy = new Participation((BasePresentationModel)event.getPresentationModel());
 
-            System.out.println("keyTable: \t" + participation_proxy.keyTable.getValue());
-            System.out.println("keyPerson: \t" + participation_proxy.keyPerson.getValue());
-            System.out.println("ID: \t \t" + participation_proxy.id.getValue());
-            System.out.println("Kommentar: \t" + participation_proxy.comment.getValue());
+            System.out.println("keyTable: "    + participation_proxy.keyTable.getValue());
+            System.out.println("keyPerson:"   + participation_proxy.keyPerson.getValue());
+            System.out.println("ParticipationID: "  + participation_proxy.id.getValue());
+            System.out.println("Kommentar: "   + participation_proxy.comment.getValue());
 
             //check for each added Participation
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
@@ -196,8 +200,9 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
                         for(Person personProxy : data_persons){
                             //if found...
                             if(personProxy.id.getValue() == participation_proxy.keyPerson.getValue()){
-                                System.out.println("UniqueTestingString" + personProxy.name.getValue());
+                                System.out.println("Person: \t" + personProxy.name.getValue());
                                 //...add the guy to the list
+                                //TODO: ask for a strategy to add comments!
                                 table_proxy.addParticipator(personProxy);
                             }
                         }

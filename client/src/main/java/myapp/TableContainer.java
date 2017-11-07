@@ -1,7 +1,6 @@
 package myapp;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -10,11 +9,6 @@ import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.table.Table;
 import org.opendolphin.core.BasePresentationModel;
-import org.opendolphin.core.ModelStoreEvent;
-import org.opendolphin.core.client.ClientPresentationModel;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 /* Used to display Table-Data. Each instance represent a PM from the modelstore */
 
@@ -22,7 +16,7 @@ class TableContainer extends GridPane {
     //FXML: Google "Scene-Builder" for point&click UI-creation
 
     //used for easier access to this tableView's ID and the likes
-    Table thisTable;
+    final Table thisTable;
 
     Label label_table_title;
     Label table_title;
@@ -43,6 +37,7 @@ class TableContainer extends GridPane {
     TableColumn<Person, String> name_column;
     TableColumn<Participation, String> comment_column;
     ObservableList participation_list;
+
 
     public TableContainer(BasePresentationModel pm) {
         thisTable = new Table(pm);
@@ -72,6 +67,7 @@ class TableContainer extends GridPane {
         margin_insets = new Insets(10,10,0,10);
 
         participation_list = FXCollections.observableArrayList();
+
         tableView = new TableView();
         name_column = new TableColumn("Teilnehmer: ");
         comment_column = new TableColumn<>("Kommentar: ");
@@ -93,7 +89,6 @@ class TableContainer extends GridPane {
         info_container.setPadding(margin_insets);
         name_column.setMinWidth(100);
         comment_column.setMinWidth(100);
-
     }
 
     public void addStyleClasses() {
@@ -105,7 +100,6 @@ class TableContainer extends GridPane {
         table_description.getStyleClass().add("card-subtitle");
         table_maxsize.getStyleClass().add("control-label.text");
         table_id.getStyleClass().add("control-label.text");
-
     }
 
     public void addChildren(){
@@ -127,12 +121,15 @@ class TableContainer extends GridPane {
         //userFacingStringProperty um andere ValueTypes als String darzustellen
         table_maxsize.textProperty().bind(thisTable.maxsize.valueProperty().asString());
 
-        name_column.setCellValueFactory(cell -> cell.getValue().name.valueProperty());
+        name_column.setCellValueFactory(cell ->    cell.getValue().name.valueProperty());
+        //comment_column.setCellValueFactory(cell -> cell.getValue().comment.valueProperty());
 
     }
 
-    public void addParticipator(Person p){participation_list.add(p);
+    public void addParticipator(Person p){
+        participation_list.add(p);
     }
+
 
     public TableContainer getContainer(){return this;}
 
