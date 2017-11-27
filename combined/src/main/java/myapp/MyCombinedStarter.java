@@ -2,6 +2,7 @@ package myapp;
 
 import javafx.application.Application;
 
+import myapp.service.SomeService;
 import org.opendolphin.core.server.ServerDolphin;
 
 import myapp.controller.Reception;
@@ -25,7 +26,7 @@ public class MyCombinedStarter {
 
     private static void registerApplicationActions(ServerDolphin serverDolphin) {
         //todo: instantiate all your services here and provide them to the Reception
-        SomeCombinedService myService = new SomeCombinedService();
+        SomeService myService = new SomeRemoteService();
 
         serverDolphin.register(new Reception(myService));
     }

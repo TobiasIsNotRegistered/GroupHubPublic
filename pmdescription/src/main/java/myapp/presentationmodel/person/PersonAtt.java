@@ -1,4 +1,4 @@
-package myapp.presentationmodel.table;
+package myapp.presentationmodel.person;
 
 import myapp.presentationmodel.PMDescription;
 import myapp.util.AttributeDescription;
@@ -7,15 +7,18 @@ import myapp.util.ValueType;
 /**
  * todo: Describe all your application specific PresentationModel-Attributes like this
  */
-public enum TableAtt implements AttributeDescription {
+public enum PersonAtt implements AttributeDescription {
     ID(ValueType.ID),
-    DESCRIPTION(ValueType.STRING),
-    MAXSIZE(ValueType.INT),
-    TITLE(ValueType.STRING);
+    NAME(ValueType.STRING),
+    CONTACT_TEL(ValueType.STRING),
+    CONTACT_EMAIL(ValueType.STRING),
+    IMG_URL(ValueType.STRING),
+    INFO(ValueType.STRING);
+
 
     private final ValueType valueType;
 
-    TableAtt(ValueType type) {
+    PersonAtt(ValueType type) {
         valueType = type;
     }
 
@@ -26,6 +29,6 @@ public enum TableAtt implements AttributeDescription {
 
     @Override
     public PMDescription getPMDescription() {
-        return PMDescription.TABLE;
+        return PMDescription.PERSON;
     }
 }

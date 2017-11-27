@@ -13,6 +13,7 @@ public enum ParticipationAtt implements AttributeDescription {
     KEY_TABLE(ValueType.LONG),
     COMMENT(ValueType.STRING);
 
+
     private final ValueType valueType;
 
     ParticipationAtt(ValueType type) {

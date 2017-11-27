@@ -34,7 +34,6 @@ class PersonController extends Controller implements BasePmMixin {
     @Override
     public void registerCommands(ActionRegistry registry) {
         registry.register(PersonCommands.LOAD_ALL_PERSONS, ($, $$) -> loadAllPersons());
-        registry.register(PersonCommands.LOAD_NEXT_PERSON, ($,$$) -> loadNextPerson());
         registry.register(PersonCommands.SAVE            , ($, $$) -> save());
         registry.register(PersonCommands.RESET           , ($, $$) -> reset(PMDescription.PERSON));
     }
@@ -56,15 +55,6 @@ class PersonController extends Controller implements BasePmMixin {
         getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(personProxy, newValue));
     }
 
-
-    ServerPresentationModel loadNextPerson() {
-        DTO dto = service.loadNextPerson();
-        ServerPresentationModel pm = createPM(PMDescription.PERSON, dto);
-
-        personProxy.getPresentationModel().syncWith(pm);
-
-        return pm;
-    }
 
     void loadAllPersons(){
         List<DTO> dtos = service.loadAllPersons();

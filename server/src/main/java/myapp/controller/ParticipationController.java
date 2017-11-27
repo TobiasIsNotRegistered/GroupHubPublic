@@ -7,7 +7,6 @@ import myapp.presentationmodel.participation.ParticipationCommands;
 import myapp.presentationmodel.person.PersonCommands;
 import myapp.service.SomeService;
 import myapp.util.Controller;
-import myapp.util.veneer.PresentationModelVeneer;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerPresentationModel;

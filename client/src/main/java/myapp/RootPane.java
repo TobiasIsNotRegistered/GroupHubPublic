@@ -9,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import myapp.presentationmodel.participation.Participation;
@@ -30,7 +32,6 @@ import myapp.util.ViewMixin;
 import myapp.util.veneer.AttributeFX;
 import myapp.util.veneer.BooleanAttributeFX;
 
-
 /**
  * root Pane for more sophisticated container instances.
  *
@@ -41,6 +42,8 @@ import myapp.util.veneer.BooleanAttributeFX;
 class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
 
     //TODO: Ask for UTF-8 Encoding or solution to evade wrong äöü displays
+    //TODO: Ask how comments can be bound to the list
+    //TODO: Ask for User-Strategy (current User, how to instantiate a new User, make a link from User to created Tables)
     //TODO: Ask for server (?)
 
     private static final String DIRTY_STYLE     = "dirty";
@@ -64,7 +67,11 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
     //lists the instances of TableContainer
     private VBox containerBox;
     private HBox buttonBox;
-    private Label title;
+    private ImageView logo;
+    private Image img;
+
+    private SplitPane splitPane;
+    private VBox toolbar;
 
     //always needed
     private final ApplicationState ps;
@@ -84,8 +91,8 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
     @Override
     public void initializeSelf() {
         addStylesheetFiles("/myapp/myApp.css", "/myapp/material-fx-v0_3.css");
-        this.getStyleClass().add("root");
-
+        //this.getStyleClass().add("root");
+        img = new Image("logo.png");
     }
 
     @Override
@@ -100,10 +107,14 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         scrollPane = new ScrollPane();
         containerBox = new VBox();
         buttonBox = new HBox(5);
+        toolbar = new VBox();
+
+        logo = new ImageView(img);
 
         scrollPane.setContent(containerBox);
-
-        title = new Label("GroupHubFX");
+        toolbar.getChildren().addAll(logo, buttonBox);
+        splitPane = new SplitPane(toolbar, scrollPane);
+        splitPane.setDividerPositions(200);
     }
 
     @Override
@@ -118,18 +129,20 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         AnchorPane.setRightAnchor(  buttonBox, 20.00);
         AnchorPane.setLeftAnchor(   buttonBox, 20.00);
 
-        AnchorPane.setRightAnchor(title, 20.00);
-        AnchorPane.setTopAnchor(title, 20.00);
+        AnchorPane.setRightAnchor(logo, 20.00);
+        AnchorPane.setTopAnchor(logo, 10.00);
 
-        title.setMinHeight(60);
+        logo.setFitHeight(60);
+        logo.setPreserveRatio(true);
 
         buttonBox.getChildren().addAll(saveButton, resetButton, nextButton, germanButton, englishButton);
 
-        this.getChildren().addAll(buttonBox, scrollPane, title);
+        //this.getChildren().addAll(splitPane); // use this for splitPane
+        this.getChildren().addAll(buttonBox, logo, scrollPane);
         //affects the contents of scrollpane, which is containerBox. containerBox has Children of the type TableContainer.
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        //scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         this.setPrefSize(1000,600);
     }
@@ -140,7 +153,6 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         ApplicationState ps = getApplicationState();
         saveButton.setOnAction(   $ -> clientDolphin.send(PersonCommands.SAVE));
         resetButton.setOnAction(  $ -> clientDolphin.send(PersonCommands.RESET));
-        nextButton.setOnAction(   $ -> clientDolphin.send(TableCommands.LOAD_NEXT_TABLE));
 
         germanButton.setOnAction( $ -> ps.language.setValue(Language.GERMAN));
         englishButton.setOnAction($ -> ps.language.setValue(Language.ENGLISH));
@@ -155,7 +167,6 @@ class RootPane extends AnchorPane implements ViewMixin, BasePmMixin {
         getDolphin().addModelStoreListener(PMDescription.TABLE.getName(), event -> {
             if(event.getType().equals(ModelStoreEvent.Type.ADDED)){
                 TableContainer newInstance = new TableContainer((BasePresentationModel) event.getPresentationModel());
-
                 containerBox.getChildren().add(newInstance);
             }
             if(event.getType().equals(ModelStoreEvent.Type.REMOVED)){

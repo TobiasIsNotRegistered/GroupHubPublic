@@ -2,8 +2,6 @@ package myapp.presentationmodel.person;
 
 import org.opendolphin.core.BasePresentationModel;
 
-import myapp.util.veneer.BooleanAttributeFX;
-import myapp.util.veneer.IntegerAttributeFX;
 import myapp.util.veneer.LongAttributeFX;
 import myapp.util.veneer.StringAttributeFX;
 import myapp.util.veneer.PresentationModelVeneer;

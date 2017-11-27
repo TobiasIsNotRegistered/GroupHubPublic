@@ -21,3 +21,5 @@ include 'client'
 include 'combined'
 
 //rootProject.name = 'DolphinJumpstart'
+include 'pmdescription'
+
