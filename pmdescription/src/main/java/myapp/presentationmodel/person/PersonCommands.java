@@ -6,8 +6,9 @@ package myapp.presentationmodel.person;
  * todo: specify all commands you need in your corresponding controller
  */
 public interface PersonCommands {
-	String LOAD_ALL_PERSONS = unique("loadAllPersons");
-
+	String LOAD_PARTICIPATORS = unique("loadParticipators");
+	String LOAD_ORGANIZERS = unique("loadOrganizers");
+	String CONFIRM_LOGIN = unique("confirmLogin");
 	String SAVE             = unique("save");
 	String RESET            = unique("reset");
 

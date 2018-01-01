@@ -76,7 +76,7 @@ class TableContainer extends GridPane {
     public void layoutContainer(){
         //don't know why exactly but it works.
         VBox.setMargin(this, margin_insets);
-        table_description.setEditable(false);
+        table_description.setEditable(true);
 
         ColumnConstraints column1 = new ColumnConstraints();
         column1.setPercentWidth(50);

@@ -18,6 +18,8 @@ import myapp.util.AttributeDescription;
  */
 public interface DTOMixin {
 
+
+
     default long createNewId() {
         return System.nanoTime();
     }

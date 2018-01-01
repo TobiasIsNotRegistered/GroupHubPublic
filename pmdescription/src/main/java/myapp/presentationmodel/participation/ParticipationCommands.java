@@ -6,7 +6,7 @@ package myapp.presentationmodel.participation;
  * todo: specify all commands you need in your corresponding controller
  */
 public interface ParticipationCommands {
-	String LOAD_ALL_PARTICIPATIONS 	= unique("loadAllParticipations");
+	String LOAD_PARTICIPATIONS 	= unique("loadParticipations");
 	String SAVE             	= unique("save");
 	String RESET            	= unique("reset");
 

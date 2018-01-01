@@ -4,15 +4,19 @@ import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.participation.Participation;
 import myapp.presentationmodel.participation.ParticipationCommands;
-import myapp.presentationmodel.person.PersonCommands;
+import myapp.presentationmodel.table.TableAtt;
+import myapp.service.GroupHubService;
 import myapp.service.SomeService;
 import myapp.util.Controller;
 import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * This is an example for an application specific controller.
@@ -23,26 +27,23 @@ import java.util.List;
  */
 class ParticipationController extends Controller implements BasePmMixin {
 
-    private final SomeService service;
+    private final GroupHubService service;
 
-    private Participation participationProxy;
-
-    ParticipationController(SomeService service) {
+    ParticipationController(GroupHubService service) {
         this.service = service;
     }
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        registry.register(ParticipationCommands.LOAD_ALL_PARTICIPATIONS  , ($, $$) -> loadAllParticipations());
+
         registry.register(ParticipationCommands.SAVE                 , ($, $$) -> save());
         registry.register(ParticipationCommands.RESET                , ($, $$) -> reset(PMDescription.PARTICIPATION));
     }
 
+
     @Override
     protected void initializeBasePMs() {
-        ServerPresentationModel pm = createProxyPM(PMDescription.PARTICIPATION, PARTICIPATION_PROXY_ID);
 
-        participationProxy = new Participation(pm);
     }
 
     @Override
@@ -52,16 +53,9 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     protected void setupValueChangedListener() {
-        getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(participationProxy, newValue));
+
     }
 
-    void loadAllParticipations() {
-        List<DTO> list = service.loadAllParticipations();
-
-        for(DTO x : list){
-            createPM(PMDescription.PARTICIPATION, x);
-        }
-    }
 
     void save() {
         List<DTO> dtos = dirtyDTOs(PMDescription.PARTICIPATION);

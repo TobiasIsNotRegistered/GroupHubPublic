@@ -27,7 +27,7 @@ public class ApplicationStateController extends Controller implements BasePmMixi
         ServerPresentationModel applicationStatePM = createPM(PMDescription.APPLICATION_STATE, APPLICATION_STATE_ID, true);
 
         ps = new ApplicationState(applicationStatePM);
-        ps.selectedCarId.setValue(EMPTY_SELECTION_ID);
+        //ps.selectedCarId.setValue(EMPTY_SELECTION_ID);
     }
 
     @Override

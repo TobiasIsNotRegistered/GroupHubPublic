@@ -16,7 +16,6 @@ public class Table extends PresentationModelVeneer {
 
     public final LongAttributeFX    id          = new LongAttributeFX(getPresentationModel()   , TableAtt.ID);
     public final StringAttributeFX  description = new StringAttributeFX(getPresentationModel() , TableAtt.DESCRIPTION);
-    //hier war der grundlegende Fehler. Der Typ von TableAtt.MAXSIZE ist int. Das passt nicht mit StringAttributeFX zusammen.
     public final IntegerAttributeFX maxsize     = new IntegerAttributeFX(getPresentationModel() , TableAtt.MAXSIZE);
     public final StringAttributeFX title        = new StringAttributeFX(getPresentationModel(), TableAtt.TITLE);
 

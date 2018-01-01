@@ -16,6 +16,7 @@ import myapp.util.AttributeDescription;
 public enum PMDescription {
 
     //todo: add all application specific PMDescriptions
+    //TODO: ADD View-specific PM-Descriptions so the view in the clients are independent (connect via Qualifiert)
     PERSON("PersonPM", "PERSON", PersonAtt.values()),
     TABLE("TablePM", "TABLE", TableAtt.values()),
     PARTICIPATION("ParticipationPM" , "PARTICIPATION", ParticipationAtt.values()),

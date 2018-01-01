@@ -7,9 +7,12 @@ package myapp.presentationmodel.table;
  */
 public interface TableCommands {
 
-	String LOAD_ALL_TABLES = unique("loadAllTables");
+	String LOAD_BY_ORGANIZER= unique("loadAllTablesOfOrganizer");
+	String LOAD_SOONEST		= unique("loadSoonestTables");
+	String CREATE_EMPTY		= unique("createEmptyTable");
 	String SAVE             = unique("save");
 	String RESET            = unique("reset");
+	String CLEAR			= unique("clear");
 
 	static String unique(String key) {
 		return TableCommands.class.getName() + "." + key;

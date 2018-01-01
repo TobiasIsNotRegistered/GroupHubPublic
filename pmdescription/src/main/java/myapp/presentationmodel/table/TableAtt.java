@@ -12,7 +12,7 @@ public enum TableAtt implements AttributeDescription {
     DESCRIPTION(ValueType.STRING),
     MAXSIZE(ValueType.INT),
     TITLE(ValueType.STRING),
-    ORGANIZER(ValueType.ID),
+    ORGANIZER(ValueType.STRING),
     DATE(ValueType.STRING),
     CREATION_DATE(ValueType.STRING),
     MEETING_POINT(ValueType.STRING),

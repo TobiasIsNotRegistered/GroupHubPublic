@@ -122,6 +122,12 @@ public abstract class Controller extends DolphinServerAction implements DolphinM
         return getServerDolphin().presentationModel(pmDescription.pmId(id), pmDescription.getName(), dto);
     }
 
+    protected ServerPresentationModel createPM(PMDescription pmDescription, DTO dto, long id) {
+        dto.getSlots().addAll(createAllSlots(pmDescription, false, false));
+
+        return getServerDolphin().presentationModel(pmDescription.pmId(id), pmDescription.getName(), dto);
+    }
+
     protected ServerPresentationModel createPM(PMDescription pmDescription, long id, boolean createLabelSlot) {
         List<Slot> allSlots = createAllSlots(pmDescription, true, createLabelSlot);
 

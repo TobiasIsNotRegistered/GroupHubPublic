@@ -13,7 +13,9 @@ public enum PersonAtt implements AttributeDescription {
     CONTACT_TEL(ValueType.STRING),
     CONTACT_EMAIL(ValueType.STRING),
     IMG_URL(ValueType.STRING),
-    INFO(ValueType.STRING);
+    INFO(ValueType.STRING),
+    IS_USER(ValueType.BOOLEAN),
+    PASSWORD(ValueType.STRING);
 
 
     private final ValueType valueType;

@@ -25,16 +25,6 @@ public class MyAppView extends Application implements BasePmMixin {
     public void start(Stage stage) throws Exception {
         clientDolphin.send(BasicCommands.INITIALIZE_BASE_PMS,
              $ -> buildUI(stage));
-
-        clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
-             $ -> clientDolphin.send(PersonCommands.LOAD_ALL_PERSONS));
-
-        clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
-                $ -> clientDolphin.send(TableCommands.LOAD_ALL_TABLES));
-
-        clientDolphin.send(BasicCommands.INITIALIZE_CONTROLLER,
-                $ -> clientDolphin.send(ParticipationCommands.LOAD_ALL_PARTICIPATIONS));
-
     }
 
     private void buildUI(Stage stage) {

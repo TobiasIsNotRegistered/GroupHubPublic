@@ -2,7 +2,9 @@ package myapp;
 
 import javafx.application.Application;
 
+import myapp.service.GroupHubService;
 import myapp.service.SomeService;
+import myapp.service.impl.GroupHubRemoteService;
 import org.opendolphin.core.server.ServerDolphin;
 
 import myapp.controller.Reception;
@@ -26,7 +28,7 @@ public class MyCombinedStarter {
 
     private static void registerApplicationActions(ServerDolphin serverDolphin) {
         //todo: instantiate all your services here and provide them to the Reception
-        SomeService myService = new SomeRemoteService();
+        GroupHubService myService = new GroupHubRemoteService();
 
         serverDolphin.register(new Reception(myService));
     }

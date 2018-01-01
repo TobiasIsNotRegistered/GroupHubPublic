@@ -18,8 +18,7 @@ public enum ApplicationStateAtt implements AttributeDescription {
     CLEAN_DATA(ValueType.BOOLEAN      , false),
     FILTER_STRING(ValueType.STRING    , false),
     UNDO_DISABLED(ValueType.BOOLEAN   , false),
-    REDO_DISABLED(ValueType.BOOLEAN   , false),
-    SELECTED_CAR_ID(ValueType.ID      , true);
+    REDO_DISABLED(ValueType.BOOLEAN   , false);
 
     private final ValueType valueType;
     private final boolean   isUndoAble;

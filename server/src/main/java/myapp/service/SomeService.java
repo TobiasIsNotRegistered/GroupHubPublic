@@ -16,6 +16,7 @@ public interface SomeService {
     List<DTO> loadAllPersons();
 
     DTO loadNextTable();
+    DTO loadEmptyTable();
     List<DTO> loadAllTables();
 
     List<DTO> loadAllParticipations();

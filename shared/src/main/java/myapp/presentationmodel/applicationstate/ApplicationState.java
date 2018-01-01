@@ -24,6 +24,5 @@ public class ApplicationState extends PresentationModelVeneer {
     public final BooleanAttributeFX        cleanData        = new BooleanAttributeFX(getPresentationModel(), ApplicationStateAtt.CLEAN_DATA);
     public final BooleanAttributeFX        undoDisabled     = new BooleanAttributeFX(getPresentationModel(), ApplicationStateAtt.UNDO_DISABLED);
     public final BooleanAttributeFX        redoDisabled     = new BooleanAttributeFX(getPresentationModel(), ApplicationStateAtt.REDO_DISABLED);
-    public final LongAttributeFX           selectedCarId    = new LongAttributeFX(getPresentationModel()   , ApplicationStateAtt.SELECTED_CAR_ID);
 
 }

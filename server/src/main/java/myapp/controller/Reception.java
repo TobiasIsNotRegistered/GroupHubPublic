@@ -1,5 +1,6 @@
 package myapp.controller;
 
+import myapp.service.GroupHubService;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
@@ -11,9 +12,10 @@ import myapp.service.SomeService;
  */
 
 public class Reception extends DolphinServerAction {
-    private SomeService myService;
 
-    public Reception(SomeService myService) {
+    private GroupHubService myService;
+
+    public Reception(GroupHubService myService) {
         this.myService = myService;
     }
 

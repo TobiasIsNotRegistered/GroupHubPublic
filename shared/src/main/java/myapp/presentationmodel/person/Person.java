@@ -16,6 +16,5 @@ public class Person extends PresentationModelVeneer {
 
     public final LongAttributeFX    id      = new LongAttributeFX(getPresentationModel()   , PersonAtt.ID);
     public final StringAttributeFX  name    = new StringAttributeFX(getPresentationModel() , PersonAtt.NAME);
-//    public final StringAttributeFX  contact = new StringAttributeFX(getPresentationModel() , PersonAtt.CONTACT);
 
 }
