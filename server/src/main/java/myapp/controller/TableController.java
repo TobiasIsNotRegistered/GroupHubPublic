@@ -3,14 +3,20 @@ package myapp.controller;
 import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.person.PersonAtt;
+import myapp.presentationmodel.table.TableAtt;
 import myapp.presentationmodel.table.TableCommands;
 import myapp.service.GroupHubService;
 import myapp.util.Controller;
+import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
+import org.opendolphin.core.server.DefaultServerDolphin;
+import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is an example for an application specific controller.
@@ -32,6 +38,7 @@ class TableController extends Controller implements BasePmMixin {
 
         registry.register(TableCommands.LOAD_SOONEST    , ($,$$) -> loadSoonestTables());
         registry.register(TableCommands.LOAD_BY_ORGANIZER, ($,$$) -> loadTablesByOrganizer());
+        registry.register(TableCommands.DELETE_ALL, ($,$$) -> deleteTablesFromStore());
         registry.register(TableCommands.CREATE_EMPTY    , ($,$$) -> loadEmptyTable());
         registry.register(TableCommands.SAVE            , ($, $$) -> save());
         registry.register(TableCommands.RESET           , ($, $$) -> reset(PMDescription.TABLE));
@@ -52,10 +59,12 @@ class TableController extends Controller implements BasePmMixin {
 
 
     public String getCurrentUserID(){
-        return getDolphin().findPresentationModelById((Long.toString(CURRENT_USER_ID))).getAt(PersonAtt.ID.name()).getValue().toString();
+        return getDolphin().findPresentationModelById(PersonController.getUserID()).getAt(PersonAtt.ID.name()).getValue().toString();
     }
 
+
     void clear(){
+        //throws unsupportedOperationException, not usable
         getDolphin().listPresentationModels().clear();
     }
 
@@ -63,17 +72,47 @@ class TableController extends Controller implements BasePmMixin {
         int amount = 20;
         List<DTO> dtos = service.findSoonestTables(amount);
         for(DTO x : dtos){
-            createPM(PMDescription.TABLE, x);
+            if (getDolphin().findPresentationModelById(getSlot(x, TableAtt.ID).getValue().toString())==null){
+                createPM(PMDescription.TABLE, x);
+            }else{
+                System.out.println("[TableController]loadSoonestTables()--> FATAL: NOT POSSIBLE TO DELETE PM's");
+            }
+
         }
         System.out.println("[TableController]loadSoonestTables()-->loaded: " + amount + " closest TablePM's into PMStore.");
     }
 
-    void loadTablesByOrganizer(){
+    void deleteTablesFromStore(){
+        //TODO: What's the correct way to delete PM's from Store? It is super painfull and the methods don't work like expected.
 
+        for(PresentationModel x : findAllPresentationModelsByType(PMDescription.TABLE).collect(Collectors.toList())){
+            //this is really non-intuitive
+            getDolphin().remove(x);
+            getServerDolphin().remove((ServerPresentationModel) x);
+
+        }
+
+
+        for(PresentationModel y : getServerDolphin().findAllPresentationModelsByType(PMDescription.TABLE.getName()).stream().collect(Collectors.toList())){
+            getServerDolphin().remove((ServerPresentationModel) y);
+            getDolphin().remove(y);
+        }
+
+
+        DefaultServerDolphin.deleteAllPresentationModelsOfType(null,PMDescription.TABLE.getName());
+        getServerDolphin().removeAllPresentationModelsOfType(PMDescription.TABLE.getName());
+
+        System.out.println("[TableController]deleteTablesFromStore() --> " + true);
+    }
+
+    void loadTablesByOrganizer(){
+        int created = 0;
         List<DTO> dtos = service.findTablesByOrganizer(getCurrentUserID());
         for(DTO x : dtos){
             createPM(PMDescription.TABLE, x);
+            created++;
         }
+        System.out.println("[TableController]loadTablesByOrganizer()--> loaded " + created + " new Tables corresponding to the current User.");
     }
 
     void loadEmptyTable(){

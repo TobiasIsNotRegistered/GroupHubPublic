@@ -7,7 +7,8 @@ package myapp.presentationmodel.table;
  */
 public interface TableCommands {
 
-	String LOAD_BY_ORGANIZER= unique("loadAllTablesOfOrganizer");
+	String LOAD_BY_ORGANIZER= unique("loadByOrganizers");
+	String DELETE_ALL		= unique("deleteTablesFromStore");
 	String LOAD_SOONEST		= unique("loadSoonestTables");
 	String CREATE_EMPTY		= unique("createEmptyTable");
 	String SAVE             = unique("save");

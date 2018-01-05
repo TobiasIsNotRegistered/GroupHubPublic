@@ -16,6 +16,7 @@ import org.opendolphin.core.server.comm.ActionRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -35,7 +36,7 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-
+        registry.register(ParticipationCommands.LOAD_PARTICIPATIONS,    ($,$$) -> loadParticipations());
         registry.register(ParticipationCommands.SAVE                 , ($, $$) -> save());
         registry.register(ParticipationCommands.RESET                , ($, $$) -> reset(PMDescription.PARTICIPATION));
     }
@@ -53,7 +54,15 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     protected void setupValueChangedListener() {
+    }
 
+
+    public void loadParticipations(){
+        findAllPresentationModelsByType(PMDescription.TABLE).forEach(presentationModel -> {
+            service.findActiveParticipations(presentationModel.getAt(TableAtt.ID.name()).getValue().toString()).stream().forEach(dto ->
+            createPM(PMDescription.PARTICIPATION, dto));
+        });
+        System.out.println("[ParticipationController]loadParticipations-->loaded new ParticipationPM's into the PMStore. (yeah I don't know how to count in lambda)");
     }
 
 

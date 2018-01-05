@@ -32,7 +32,9 @@ import myapp.util.Controller;
 class PersonController extends Controller implements BasePmMixin{
 
     private final GroupHubService service;
-    PresentationModel user;
+    static private PresentationModel user;
+
+
 
     PersonController(GroupHubService service) {
         this.service = service;
@@ -59,8 +61,8 @@ class PersonController extends Controller implements BasePmMixin{
         for (PresentationModel currentTable : tables){
                 //for every ParticipationDTO, create a ParticipationPM
                 for (DTO y : service.findActiveParticipations(currentTable.getAt(TableAtt.ID.name()).getValue().toString())){
-                    createPM(PMDescription.PARTICIPATION, y);
-                    createdParticipations++;
+                    //createPM(PMDescription.PARTICIPATION, y);
+                    //createdParticipations++;
                     //AND create the corresponding personPM, if it doesn't exist
                     boolean personAlreadyInPMStore = getDolphin().findPresentationModelById("PersonPM:" + getSlot(y, ParticipationAtt.KEY_PERSON).getValue().toString()) != null;
                     if(!personAlreadyInPMStore){
@@ -71,7 +73,7 @@ class PersonController extends Controller implements BasePmMixin{
                     }
             }
         }
-        System.out.println("[PersonController]loadParticipators()--> loaded: " + createdParticipations + " ParticipationPM's and: " + createdPersons + " PersonPM's and skipped: " + skippedPersons + " already existing PersonPM's.");
+        System.out.println("[PersonController]loadParticipators()--> loaded: "+ createdPersons + " PersonPM's and skipped: " + skippedPersons + " already existing PersonPM's.");
     }
 
     void loadOrganizers(){
@@ -82,7 +84,7 @@ class PersonController extends Controller implements BasePmMixin{
         for (PresentationModel x : tables){
             //System.out.println("OrganizersSOLL: " + x.getAt(TableAtt.ORGANIZER.name()).getValue().toString());
 
-            //don't create a PM if it already exists, not necessary
+            //don't create a PM if it already exists
             if (getDolphin().findPresentationModelById("PersonPM:"+x.getAt(TableAtt.ORGANIZER.name()).getValue().toString())==null){
                 createPM(PMDescription.PERSON, service.findPersonByID(x.getAt(TableAtt.ORGANIZER.name()).getValue().toString()));
                 created++;
@@ -150,14 +152,25 @@ class PersonController extends Controller implements BasePmMixin{
             boolean personAlreadyInPMStore = getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString()) != null;
             if(personAlreadyInPMStore){
                 user.syncWith(getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString()));
+                user.getAt(PersonAtt.IS_USER.name()).setValue(true);
                 return;
             }else{
                 user.syncWith(createPM(PMDescription.PERSON, userDTO));
+                user.getAt(PersonAtt.IS_USER.name()).setValue(true);
                 return;
             }
 
         }
 
+    }
+
+    public static String getUserID(){
+        System.out.println(user.getId());
+        return user.getId();
+    }
+
+    public static void setUserID(String ID){
+        user.getAt(PersonAtt.ID.name()).setValue(ID);
     }
 
 

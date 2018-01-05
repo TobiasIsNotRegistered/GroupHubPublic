@@ -106,7 +106,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
 
     /*
     Used to find Organizer.
-    -The class TableController invokes this method in it's "loadOrganizers" method for each existing Table in the PMStore
+    -The class PersonController invokes this method in it's "loadOrganizers" method for each existing Table in the PMStore
     and returns the corresponding person-DTO or throws an exception if the DTO is not found.
     -possible reasons why DTO could not be found:
         -The reference to the person (called 'Organizer') stored in the TablePM is faulty.
@@ -149,7 +149,6 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     public List<DTO> findTablesByOrganizer(String organizerID){
         List<DTO> result = new ArrayList<DTO>();
         for (DTO x : tables){
-            //compare as Integer, not elegant as well
             if((getSlot(x, TableAtt.ORGANIZER).getValue().toString()).equals(organizerID)){
                 result.add(x);
             }
@@ -163,7 +162,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     -TODO: Check if guests should also be able to create a Table, without an explicit declared Organizer.
         -A possible idea is to give the user the option between setting "Organizer" to
             -"locked and empty" (creator declares that this event needs no Organizer)
-            -"open and empty" (everybody can assign (him-/herself) as long as its unassigned)[wow, genderneutrality in code-comments]
+            -"open and empty" (everybody can assign (him-/herself) as long as its unassigned)
             -"declared but changeable by any participator to himself" (if you wanna organize it, sure, go ahead)
             -"declared and locked" (I'm the organizer, nobody else, leave me alone)
      */
@@ -214,7 +213,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     /*
     searches through DB and returns a List of ParticipationDTO's, from which of all have a reference to currently stored Tables in the PMStore.
     -enables the creation of all PersonPM's corresponding to the keyPerson contained in the participationPM stored in this list
-    -this method is invoked by the method "loadParticipators()" in the class "PersonController".
+    -this method is invoked by the method "loadParticipators()" in the class "ParticipationController".
 
      */
     public List<DTO> findActiveParticipations(String tableID){
@@ -283,7 +282,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
 
             name = person_names[r.nextInt(person_names.length)];
             email = name.substring(name.indexOf(" "))+"@"+"randomMailAddressGenerator.com";
-            tel = "0" + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())))+ Integer.valueOf(email.charAt(r.nextInt(email.length())));
+            tel =  Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " " + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " "+Integer.valueOf(email.charAt(r.nextInt(email.length())));
 
             persons.add(new DTO(
                     createSlot(PersonAtt.ID, personID, personID),
