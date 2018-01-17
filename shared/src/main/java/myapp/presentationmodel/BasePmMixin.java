@@ -16,14 +16,14 @@ import myapp.presentationmodel.applicationstate.ApplicationState;
 public interface BasePmMixin {
     //todo: for all your basePMs (as delivered by your Controllers) specify constants and getter-methods like these
     long PERSON_PROXY_ID = -777L;
-    long CURRENT_USER_ID = -111L;
+    long EMPTY_USER_ID = -111L;
 
     default BasePresentationModel getPersonProxyPM() {
         return (BasePresentationModel) getDolphin().getAt(PMDescription.PERSON.pmId(PERSON_PROXY_ID));
     }
 
     default BasePresentationModel getUserPM(){
-        return (BasePresentationModel) getDolphin().getAt(PMDescription.PERSON.pmId(CURRENT_USER_ID));
+        return (BasePresentationModel) getDolphin().getAt(PMDescription.PERSON.pmId(EMPTY_USER_ID));
     }
 
     default Person getUser(){return new Person(getUserPM());}

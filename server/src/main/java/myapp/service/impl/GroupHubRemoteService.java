@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by tobi6 on 21.12.2017.
@@ -201,7 +202,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
                 createSlot(PersonAtt.NAME, "UnbekannterBenutzer", personID),
                 createSlot(PersonAtt.PASSWORD, "plebejer", personID),
                 createSlot(PersonAtt.IS_USER, false, personID),
-                createSlot(PersonAtt.IMG_URL, "", personID),
+                createSlot(PersonAtt.IMG_URL, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png", personID),
                 createSlot(PersonAtt.INFO, "keine Info vorhanden", personID),
                 createSlot(PersonAtt.CONTACT_EMAIL, "enter Email here", personID),
                 createSlot(PersonAtt.CONTACT_TEL, "enter Tel. here", personID));
@@ -277,12 +278,15 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
         String name;
         String email;
         String tel;
+        List<String> unique_shuffled_names = new ArrayList();
+        unique_shuffled_names = Arrays.stream(person_names).collect(Collectors.toList());
+        Collections.shuffle(unique_shuffled_names);
 
         for (int i = 0; i<amount; i++){
 
-            name = person_names[r.nextInt(person_names.length)];
+            name = unique_shuffled_names.get(i);
             email = name.substring(name.indexOf(" "))+"@"+"randomMailAddressGenerator.com";
-            tel =  Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " " + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " "+Integer.valueOf(email.charAt(r.nextInt(email.length())));
+            tel =  "044 " + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " " + Integer.valueOf(email.charAt(r.nextInt(email.length()))) + " "+Integer.valueOf(email.charAt(r.nextInt(email.length())));
 
             persons.add(new DTO(
                     createSlot(PersonAtt.ID, personID, personID),
@@ -398,7 +402,28 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
             "Alan Shepard"   , "Stuart Roosa"    , "Edgar Mitchell",
             "David Scott"    , "Alfred Worden"   , "James Irwin",
             "John Young"     , "Thomas Mattingly", "Charles Duke",
-            "Eugene Cernan"  , "Ronald Evans"    , "Harrison Schmitt"};
+            "Eugene Cernan"  , "Ronald Evans"    , "Harrison Schmitt",
+            "Shirely Deshazo","Michelle Waldrup","Erika Parodi","Jada Mcilwain",
+            "Meaghan Hypolite","Camila Nilges","Zoe Foutch","Gigi Mericle","Beau Percell",
+            "Elenora Romans","Toby Grayson","Hope Pouncey","Carina Luft","Bobbye Servantes",
+            "Ossie Mceachin","Paige Fabela","Venus Gasper","Doretha Canary","Ethan Fedele",
+            "Anika Sater","Bernie Guttierrez","Sterling Mitra","Jackqueline Mullica",
+            "Laurel Brobst","Sylvester Schoenber","Mercedez Osteen","Gwyneth Howle",
+            "Sheldon Seitz","Adriene Penna","Art Kellough","Winston Freire","Ruthann Ojeda",
+            "Sasha Heidrick","Mickey Caldera","Freeman William","Jacinta Normandin",
+            "Darci Zucker","Ron Duropan","Brinda Casarez","Chara Modesto","Vena Lockard",
+            "Leesa Chason","Jennell Maberry","Bettyann Stogner","Forest Calbert","Coral Quezada",
+            "Freda Brouillette","Abbie Corbett","Tania Milstead","Aleshia Cales","Ja Rollo",
+            "Lorenza Dancer","Vernita Bloodsaw","Lilliana Quinonez","Shandi Hoang","Mitsue Pyatt",
+            "Shonta Heckel","Nedra Pinckney","Jamey Wooster","Alethea Degennaro","Elsy Guimond",
+            "Domingo Ammons","Mirella Bodie","Rigoberto Sobus","Mariana Spadaro","Gaylene Seevers",
+            "Arleen Veliz","Amira Merrigan","Shay Mallett","Cristy Oxner","Bennie Bonnett",
+            "Walter Nowak","Milo Murchison","Nathan Vandenbosch","Mona Stefaniak","Shelba Crawford",
+            "Meda Lamphere","Katharyn Stemen","Marci Schaper","Pinkie Lemarr","Angelyn Ralls",
+            "Melissia Youngquist","Melani Sober","Angela Mullens","Berna Jeppson","Jennie Callicoat",
+            "Cordia Record","Jenifer Spahr","Alda Pender","Kyle Tumlinson","Camila Oliveri",
+            "Amado Morehead","Felipa Defazio","Maximo Branam","Weldon Marrufo","Larue Setser",
+            "Regine Deshotel","Lanie Bierce","Bertha Rubottom","Easter Martinek"};
 
     //9 possible titles
     private String[] person_infos = {

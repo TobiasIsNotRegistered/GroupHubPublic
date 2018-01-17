@@ -1,25 +1,20 @@
 package myapp.controller;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import myapp.presentationmodel.participation.ParticipationAtt;
-import myapp.presentationmodel.person.Person;
 import myapp.presentationmodel.person.PersonAtt;
 import myapp.presentationmodel.table.TableAtt;
 import myapp.service.GroupHubService;
-import myapp.util.DolphinMixin;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
-import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
 import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.person.PersonCommands;
-import myapp.service.SomeService;
 import myapp.util.Controller;
 
 /**
@@ -33,8 +28,7 @@ class PersonController extends Controller implements BasePmMixin{
 
     private final GroupHubService service;
     static private PresentationModel user;
-
-
+    private String CURRENT_USER_ID;
 
     PersonController(GroupHubService service) {
         this.service = service;
@@ -101,7 +95,7 @@ class PersonController extends Controller implements BasePmMixin{
         //initiates an empty userPM. The clients will search for it (by ID) after sending the command "initilizeBasePM"-
         DTO userDTO = service.createEmptyPerson();
         //added a new method-constructor
-        user = createPM(PMDescription.PERSON, userDTO, CURRENT_USER_ID);
+        user = createPM(PMDescription.PERSON, userDTO, EMPTY_USER_ID);
     }
 
     @Override
@@ -159,13 +153,11 @@ class PersonController extends Controller implements BasePmMixin{
                 user.getAt(PersonAtt.IS_USER.name()).setValue(true);
                 return;
             }
-
         }
-
     }
 
     public static String getUserID(){
-        System.out.println(user.getId());
+        System.out.println("[PersonController]getUserID()--> server's current user has ID: " + user.getId());
         return user.getId();
     }
 
