@@ -7,7 +7,6 @@ import myapp.presentationmodel.table.TableAtt;
 import myapp.presentationmodel.table.TableCommands;
 import myapp.service.GroupHubService;
 import myapp.util.Controller;
-import org.opendolphin.core.BasePresentationModel;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
@@ -38,6 +37,7 @@ class TableController extends Controller implements BasePmMixin {
 
         registry.register(TableCommands.LOAD_SOONEST    , ($,$$) -> loadSoonestTables());
         registry.register(TableCommands.LOAD_BY_ORGANIZER, ($,$$) -> loadTablesByOrganizer());
+        registry.register(TableCommands.LOAD_BY_PARTICIPATOR, ($,$$) -> loadTablesByParticipator());
         registry.register(TableCommands.DELETE_ALL, ($,$$) -> deleteTablesFromStore());
         registry.register(TableCommands.CREATE_EMPTY    , ($,$$) -> loadEmptyTable());
         registry.register(TableCommands.SAVE            , ($, $$) -> save());
@@ -70,13 +70,15 @@ class TableController extends Controller implements BasePmMixin {
 
     void loadSoonestTables(){
         int amount = 20;
+        int count = 0;
         List<DTO> dtos = service.findSoonestTables(amount);
         for(DTO x : dtos){
-            if (getDolphin().findPresentationModelById(getSlot(x, TableAtt.ID).getValue().toString())==null){
+            if (getDolphin().findPresentationModelById("TablePM:" + getSlot(x, TableAtt.ID).getValue().toString())==null){
                 createPM(PMDescription.TABLE, x);
+                count++;
             }
         }
-        System.out.println("[TableController]loadSoonestTables()-->loaded: " + amount + " closest TablePM's into PMStore.");
+        System.out.println("[TableController]loadSoonestTables()-->loaded: " + count + " closest TablePM's into PMStore.");
     }
 
     void deleteTablesFromStore(){
@@ -100,7 +102,8 @@ class TableController extends Controller implements BasePmMixin {
 
     void loadTablesByOrganizer(){
         int created = 0;
-        List<DTO> dtos = service.findTablesByOrganizer(getCurrentUserID());
+        System.out.println("[TableController]loadTablesByOrganizer() --> currentUserID is: " + getCurrentUserID());
+        List<DTO> dtos = service.findTablesByOrganizerID(getCurrentUserID());
         for(DTO x : dtos){
 
             if (getDolphin().findPresentationModelById("TablePM:" + getSlot(x, TableAtt.ID).getValue().toString())==null){
@@ -114,7 +117,7 @@ class TableController extends Controller implements BasePmMixin {
 
     void loadTablesByParticipator(){
         int created = 0;
-        List<DTO> dtos = service.findTablesByOrganizer(getCurrentUserID());
+        List<DTO> dtos = service.findTablesByOrganizerID(getCurrentUserID());
         for(DTO x : dtos){
 
             if (getDolphin().findPresentationModelById("TablePM:" + getSlot(x, TableAtt.ID).getValue().toString())==null){
@@ -123,12 +126,12 @@ class TableController extends Controller implements BasePmMixin {
             }
 
         }
-        System.out.println("[TableController]loadTablesByOrganizer()--> loaded " + created + " new Tables corresponding to the current User/Organizer.");
+        System.out.println("[TableController]loadTablesByParticipator()--> loaded " + created + " new Tables corresponding to the current User/Participator.");
 
     }
 
     void loadEmptyTable(){
-        DTO dto = service.createEmptyTable(getCurrentUserID());
+        DTO dto = service.createEmptyTableDTO(getCurrentUserID());
         createPM(PMDescription.TABLE, dto);
     }
 

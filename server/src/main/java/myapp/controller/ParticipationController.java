@@ -2,21 +2,17 @@ package myapp.controller;
 
 import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
-import myapp.presentationmodel.participation.Participation;
+import myapp.presentationmodel.participation.ParticipationAtt;
 import myapp.presentationmodel.participation.ParticipationCommands;
+import myapp.presentationmodel.person.PersonAtt;
 import myapp.presentationmodel.table.TableAtt;
 import myapp.service.GroupHubService;
-import myapp.service.SomeService;
 import myapp.util.Controller;
 import org.opendolphin.core.Dolphin;
-import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
-import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -36,9 +32,10 @@ class ParticipationController extends Controller implements BasePmMixin {
 
     @Override
     public void registerCommands(ActionRegistry registry) {
-        registry.register(ParticipationCommands.LOAD_PARTICIPATIONS,    ($,$$) -> loadParticipations());
+        registry.register(ParticipationCommands.LOAD_PARTICIPATIONS,    ($,$$) -> loadActiveParticipations());
         registry.register(ParticipationCommands.SAVE                 , ($, $$) -> save());
         registry.register(ParticipationCommands.RESET                , ($, $$) -> reset(PMDescription.PARTICIPATION));
+        registry.register(ParticipationCommands.CREATE_NEW              ,   ($,$$) -> createParticipation());
     }
 
 
@@ -56,13 +53,19 @@ class ParticipationController extends Controller implements BasePmMixin {
     protected void setupValueChangedListener() {
     }
 
+    public void createParticipation(){
+        DTO dto = service.createNewParticipation(getUserPM().getId());
+        createPM(PMDescription.PARTICIPATION, dto);
+        System.out.println("[ParticipationController]createParticipation-->created a new Participation for user: " + getUserPM().getAt(PersonAtt.NAME.name()).getValue().toString());
+    }
 
-    public void loadParticipations(){
+
+    public void loadActiveParticipations(){
         findAllPresentationModelsByType(PMDescription.TABLE).forEach(presentationModel -> {
             service.findActiveParticipations(presentationModel.getAt(TableAtt.ID.name()).getValue().toString()).stream().forEach(dto ->
             createPM(PMDescription.PARTICIPATION, dto));
         });
-        System.out.println("[ParticipationController]loadParticipations-->loaded new ParticipationPM's into the PMStore. (yeah I don't know how to count in lambda)");
+        System.out.println("[ParticipationController]loadActiveParticipations-->loaded new ParticipationPM's into the PMStore.");
     }
 
 

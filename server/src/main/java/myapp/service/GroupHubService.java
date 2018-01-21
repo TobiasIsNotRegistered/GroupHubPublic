@@ -9,14 +9,15 @@ import java.util.List;
  */
 public interface GroupHubService {
 
-    DTO createEmptyTable(String organizerID);
-    DTO createEmptyPerson();
+    DTO createEmptyTableDTO(String organizerID);
+    DTO createEmptyPersonDTO();
+    DTO createNewParticipation(String key);
 
     List<DTO> findActiveParticipations(String tableID); //returns all ParticipationDTO's corresponding to this tableID
     List<DTO> findSoonestTables(int amount);            //returns 'amount'(or all) tableDTO's closest to today's date (excluding past events)
     DTO findPersonByID(String id);
     DTO findPersonByName(String name);
-    List<DTO> findTablesByOrganizer(String organizerID);
+    List<DTO> findTablesByOrganizerID(String organizerID);
 
     void save(List<DTO> dtos);
 

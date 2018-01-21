@@ -92,6 +92,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
         for(int i = 0; index<amount && i<sortedTables.size();i++){
             inFuture = false;
             try{
+
                 inFuture = today.before(f.parse(getSlot(sortedTables.get(i), TableAtt.DATE).getValue().toString()));
             } catch (ParseException e){
                 throw new IllegalArgumentException(e);
@@ -147,7 +148,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     used to display "meineTische"
     -returns a List of TableDTO's; its members have the same OrganizerID as the currentUser
      */
-    public List<DTO> findTablesByOrganizer(String organizerID){
+    public List<DTO> findTablesByOrganizerID(String organizerID){
         List<DTO> result = new ArrayList<DTO>();
         for (DTO x : tables){
             if((getSlot(x, TableAtt.ORGANIZER).getValue().toString()).equals(organizerID)){
@@ -167,22 +168,31 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
             -"declared but changeable by any participator to himself" (if you wanna organize it, sure, go ahead)
             -"declared and locked" (I'm the organizer, nobody else, leave me alone)
      */
-    public DTO createEmptyTable(String organizerID){
+    public DTO createEmptyTableDTO(String organizerID){
 
+        System.out.println("[GroupHubRemoteService]createEmptyTableDTO()--> organizerID is: " + organizerID);
         DTO result;
         Random r = new Random();
-        String creationDate = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+
+        SimpleDateFormat formattedDate = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, 1);  // number of days to add
+        String creationDate = (String)(formattedDate.format(c.getTime()));
+        c.add(Calendar.DATE, 6);
+        String executionDate = (String)(formattedDate.format(c.getTime()));
+
+        System.out.println("[GroupHubRemoteService]createEmptyTableDTO()--> tomorrow's date is: " + creationDate);
 
         result = new DTO(
                 createSlot(TableAtt.ID, tableID, tableID),
                 createSlot(TableAtt.ORGANIZER, organizerID, tableID),
-                createSlot(TableAtt.DATE, "edit date here", tableID),
+                createSlot(TableAtt.DATE, executionDate, tableID),
                 createSlot(TableAtt.CREATION_DATE, creationDate, tableID),
-                createSlot(TableAtt.TITLE, "edit Title here", tableID),
-                createSlot(TableAtt.DESCRIPTION, "edit description here", tableID),
-                createSlot(TableAtt.MAXSIZE, "edit maxSize here", tableID),
-                createSlot(TableAtt.MEETING_POINT, "edit MeetingPoint here", tableID),
-                createSlot(TableAtt.DESTINATION_POINT, "edit DestinationPoint here", tableID));
+                createSlot(TableAtt.TITLE, "-", tableID),
+                createSlot(TableAtt.DESCRIPTION, "-", tableID),
+                createSlot(TableAtt.MAXSIZE, 20, tableID),
+                createSlot(TableAtt.MEETING_POINT, "-", tableID),
+                createSlot(TableAtt.DESTINATION_POINT, "-", tableID));
 
         tableID++;
         tables.add(result);
@@ -194,7 +204,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     -TODO: handle UseCase "creating a new User", possibly not much to change
     -TODO: handle the possibility of no profilePicture in client
      */
-    public DTO createEmptyPerson(){
+    public DTO createEmptyPersonDTO(){
         DTO result;
 
         result = new DTO(
@@ -210,6 +220,18 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
         persons.add(result);
         return result;
     }
+
+    public DTO createNewParticipation(String keyPerson){
+        DTO result = new DTO(
+                createSlot(ParticipationAtt.ID, participationID, participationID),
+                createSlot(ParticipationAtt.KEY_PERSON, keyPerson, participationID),
+                createSlot(ParticipationAtt.KEY_TABLE, "", participationID),
+                createSlot(ParticipationAtt.COMMENT, "", participationID));
+        participations.add(result);
+        participationID++;
+        return result;
+    }
+
 
     /*
     searches through DB and returns a List of ParticipationDTO's, from which of all have a reference to currently stored Tables in the PMStore.
@@ -229,6 +251,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
 
     //************** INITIALIZE DATA ******************** --> generate DTO's from the existing data
 
+
     private void initRandomParticipations(int amount) {
 
         for (int i = 0; i < amount; i++) {
@@ -245,7 +268,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
             participationID++;
         }
 
-        System.out.println("initiated " + amount + " random participations.");
+        System.out.println("[GroupHubRemoteService]initiated " + amount + " random participations.");
     }
 
     private void initRandomTables(int amount){
@@ -269,7 +292,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
             tableID++;
         }
 
-        System.out.println("initiated " + amount + " random tables.");
+        System.out.println("[GroupHubRemoteService]initiated " + amount + " random tables.");
     }
 
     private void initRandomUsers(int amount){
@@ -300,7 +323,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
 
             personID++;
         }
-        System.out.println("initiated " + amount + " random users.");
+        System.out.println("[GroupHubRemoteService]initiated " + amount + " random users.");
     }
 
     private void initPowerUsers(){
@@ -315,7 +338,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
                 createSlot(PersonAtt.INFO, "Student iCompetence Windisch", id_tobi),
                 createSlot(PersonAtt.CONTACT_EMAIL, "tobias.sigel@students.fhnw.ch", id_tobi),
                 createSlot(PersonAtt.CONTACT_TEL, "076 437 85 15", id_tobi));
-        System.out.println("initiated PowerUser Tobias Sigel");
+        System.out.println("[GroupHubRemoteService]initiated PowerUser Tobias Sigel");
 
         int id_mario = 102;
         DTO mario = new DTO(
@@ -327,7 +350,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
                 createSlot(PersonAtt.INFO, "Student iCompetence Windisch", id_mario),
                 createSlot(PersonAtt.CONTACT_EMAIL, "mario.winiker@students.fhnw.ch", id_mario),
                 createSlot(PersonAtt.CONTACT_TEL, "bitte nur per Mail", id_mario));
-        System.out.println("initiated PowerUser Mario Winiker");
+        System.out.println("[GroupHubRemoteService]initiated PowerUser Mario Winiker");
 
         int id_dieter = 103;
         DTO dieter = new DTO(
@@ -339,7 +362,7 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
                 createSlot(PersonAtt.INFO, "Dozent FHNW Windisch", id_dieter),
                 createSlot(PersonAtt.CONTACT_EMAIL, "dieter.holz@fhnw.ch", id_dieter),
                 createSlot(PersonAtt.CONTACT_TEL, "auf Anfrage", id_dieter));
-        System.out.println("initiated PowerUser Dieter Holz");
+        System.out.println("[GroupHubRemoteService]initiated PowerUser Dieter Holz");
 
         int id_dierk = 104;
         DTO dierk = new DTO(
@@ -351,21 +374,12 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
                 createSlot(PersonAtt.INFO, "Dozent FHNW Windisch", id_dierk),
                 createSlot(PersonAtt.CONTACT_EMAIL, "dieter.holz@fhnw.ch", id_dierk),
                 createSlot(PersonAtt.CONTACT_TEL, "auf Anfrage", id_dierk));
-        System.out.println("initiated PowerUser Dierk Koenig");
+        System.out.println("[GroupHubRemoteService]initiated PowerUser Dierk Koenig");
 
         persons.add(tobias);
         persons.add(mario);
         persons.add(dierk);
         persons.add(dieter);
-    }
-
-    @Override
-    public void save(List<DTO> dtos) {
-        System.out.println(" Data to be saved");
-        dtos.stream()
-                .flatMap(dto -> dto.getSlots().stream())
-                .map(slot -> String.join(", ", slot.getPropertyName(), slot.getValue().toString(), slot.getQualifier()))
-                .forEach(System.out::println);
     }
 
     //*************************** HELPER METHODS *********************
@@ -394,6 +408,15 @@ public class GroupHubRemoteService implements GroupHubService,DTOMixin {
     }
 
     //**************************** DATA ********************************
+
+    @Override
+    public void save(List<DTO> dtos) {
+        System.out.println(" Data to be saved");
+        dtos.stream()
+                .flatMap(dto -> dto.getSlots().stream())
+                .map(slot -> String.join(", ", slot.getPropertyName(), slot.getValue().toString(), slot.getQualifier()))
+                .forEach(System.out::println);
+    }
 
     //21 possible names
     private String[] person_names = {"Neil Armstrong"  , "Michael Collins" , "Edwin Aldrin",

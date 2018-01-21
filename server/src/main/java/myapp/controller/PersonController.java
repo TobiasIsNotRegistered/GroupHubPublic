@@ -7,6 +7,7 @@ import myapp.presentationmodel.participation.ParticipationAtt;
 import myapp.presentationmodel.person.PersonAtt;
 import myapp.presentationmodel.table.TableAtt;
 import myapp.service.GroupHubService;
+import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.DTO;
@@ -16,6 +17,7 @@ import myapp.presentationmodel.BasePmMixin;
 import myapp.presentationmodel.PMDescription;
 import myapp.presentationmodel.person.PersonCommands;
 import myapp.util.Controller;
+import org.w3c.dom.Attr;
 
 /**
  * This is an example for an application specific controller.
@@ -28,7 +30,6 @@ class PersonController extends Controller implements BasePmMixin{
 
     private final GroupHubService service;
     static private PresentationModel user;
-    private String CURRENT_USER_ID;
 
     PersonController(GroupHubService service) {
         this.service = service;
@@ -41,6 +42,30 @@ class PersonController extends Controller implements BasePmMixin{
         registry.register(PersonCommands.SAVE            , ($, $$) -> save());
         registry.register(PersonCommands.RESET           , ($, $$) -> reset(PMDescription.PERSON));
         registry.register(PersonCommands.CONFIRM_LOGIN   ,  ($,$$) -> confirmLogin());
+        registry.register(PersonCommands.LOG_OUT, ($,$$) -> logOut());
+    }
+
+
+
+    @Override
+    protected void initializeBasePMs() {
+        //initiates an empty userPM. The clients will search for it (by ID) after sending the command "initilizeBasePM"-
+        DTO userDTO = service.createEmptyPersonDTO();
+        //added a new method-constructor
+        user = createPM(PMDescription.PERSON, userDTO, EMPTY_USER_ID);
+    }
+
+    @Override
+    protected void setDefaultValues() {
+
+    }
+
+    @Override
+    protected void setupValueChangedListener() {
+        //language wechsel would be very nice, aber echt
+        /*
+        getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(personProxy, newValue));
+    */
     }
 
     //creates ParticipationPM's as well as PersonPM's for each ParticipationDTO with a keyTable corresponding to a Table in the PMStore
@@ -53,18 +78,18 @@ class PersonController extends Controller implements BasePmMixin{
 
         //for every table in PMStore, search the service for corresponding ParticipationDTO's
         for (PresentationModel currentTable : tables){
-                //for every ParticipationDTO, create a ParticipationPM
-                for (DTO y : service.findActiveParticipations(currentTable.getAt(TableAtt.ID.name()).getValue().toString())){
-                    //createPM(PMDescription.PARTICIPATION, y);
-                    //createdParticipations++;
-                    //AND create the corresponding personPM, if it doesn't exist
-                    boolean personAlreadyInPMStore = getDolphin().findPresentationModelById("PersonPM:" + getSlot(y, ParticipationAtt.KEY_PERSON).getValue().toString()) != null;
-                    if(!personAlreadyInPMStore){
-                        createPM(PMDescription.PERSON, service.findPersonByID(getSlot(y, ParticipationAtt.KEY_PERSON).getValue().toString()));
-                        createdPersons++;
-                    }else {
-                        skippedPersons++;
-                    }
+            //for every ParticipationDTO, create a ParticipationPM
+            for (DTO y : service.findActiveParticipations(currentTable.getAt(TableAtt.ID.name()).getValue().toString())){
+                //createPM(PMDescription.PARTICIPATION, y);
+                //createdParticipations++;
+                //AND create the corresponding personPM, if it doesn't exist
+                boolean personAlreadyInPMStore = getDolphin().findPresentationModelById("PersonPM:" + getSlot(y, ParticipationAtt.KEY_PERSON).getValue().toString()) != null;
+                if(!personAlreadyInPMStore){
+                    createPM(PMDescription.PERSON, service.findPersonByID(getSlot(y, ParticipationAtt.KEY_PERSON).getValue().toString()));
+                    createdPersons++;
+                }else {
+                    skippedPersons++;
+                }
             }
         }
         System.out.println("[PersonController]loadParticipators()--> loaded: "+ createdPersons + " PersonPM's and skipped: " + skippedPersons + " already existing PersonPM's.");
@@ -90,36 +115,13 @@ class PersonController extends Controller implements BasePmMixin{
         System.out.println("[PersonController]loadOrganizers()--> loaded: " + created + " new PersonPM('s) into the PMStore and skipped: " + skipped + " already existing PersonPM('s)");
     }
 
-    @Override
-    protected void initializeBasePMs() {
-        //initiates an empty userPM. The clients will search for it (by ID) after sending the command "initilizeBasePM"-
-        DTO userDTO = service.createEmptyPerson();
-        //added a new method-constructor
-        user = createPM(PMDescription.PERSON, userDTO, EMPTY_USER_ID);
-    }
-
-    @Override
-    protected void setDefaultValues() {
-
-    }
-
-    @Override
-    protected void setupValueChangedListener() {
-        //language wechsel would be very nice, aber echt
-        /*
-        getApplicationState().language.valueProperty().addListener((observable, oldValue, newValue) -> translate(personProxy, newValue));
-    */
-    }
-
-
-
     //TODO: 29.12.2017 Why can I login with "Mario Winiker", even though this PM hasn't been instantiated??
     void confirmLogin(){
         System.out.print("ConfirmLogin started: ");
         boolean isRegisteredUser = false;
         boolean passwordCorrect = false;
 
-        //find user on clientside
+        //find user on clientside (only pw & name are being altered by client)
         user =  getDolphin().findPresentationModelById("PersonPM:-111");
         if(user==null){throw new NullPointerException("[PersonController]:findPmByID returned null!");}
         System.out.print("search for user: "+user.findAttributeByPropertyName("NAME").getValue().toString() + " started: ");
@@ -143,21 +145,50 @@ class PersonController extends Controller implements BasePmMixin{
 
         if (isRegisteredUser && passwordCorrect){
             //TODO:check for alternatives to syncWith
-            boolean personAlreadyInPMStore = getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString()) != null;
+            PresentationModel userToConnectWith = getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString());
+            boolean personAlreadyInPMStore = userToConnectWith != null;
             if(personAlreadyInPMStore){
-                user.syncWith(getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString()));
-                user.getAt(PersonAtt.IS_USER.name()).setValue(true);
+                //user.syncWith(getDolphin().findPresentationModelById("PersonPM:" + getSlot(userDTO, PersonAtt.ID).getValue().toString()));
+                //name entered clientside is already correct, password as well, while IS_USER must be changed
+                copyUserData(userToConnectWith);
                 return;
             }else{
-                user.syncWith(createPM(PMDescription.PERSON, userDTO));
-                user.getAt(PersonAtt.IS_USER.name()).setValue(true);
+                //user.syncWith(createPM(PMDescription.PERSON, userDTO));
+                copyUserData(createPM(PMDescription.PERSON, userDTO));
                 return;
             }
         }
     }
 
+    void logOut(){
+        if(user != null){
+            deleteUserData();
+        }
+    }
+
+    private void copyUserData(PresentationModel userToConnectWith){
+        user.getAt(PersonAtt.CONTACT_EMAIL.name()).setValue(userToConnectWith.getAt(PersonAtt.CONTACT_EMAIL.name()).getValue().toString());
+        user.getAt(PersonAtt.CONTACT_TEL.name()).setValue(userToConnectWith.getAt(PersonAtt.CONTACT_TEL.name()).getValue().toString());
+        user.getAt(PersonAtt.IMG_URL.name()).setValue(userToConnectWith.getAt(PersonAtt.IMG_URL.name()).getValue().toString());
+        user.getAt(PersonAtt.ID.name()).setValue(userToConnectWith.getAt(PersonAtt.ID.name()).getValue().toString());
+        user.getAt(PersonAtt.INFO.name()).setValue(userToConnectWith.getAt(PersonAtt.INFO.name()).getValue().toString());
+        user.getAt(PersonAtt.IS_USER.name()).setValue(true);
+        setUserID(userToConnectWith.getAt(PersonAtt.ID.name()).getValue().toString());
+    }
+
+    private void deleteUserData(){
+        user.getAt(PersonAtt.NAME.name()).setValue("");
+        user.getAt(PersonAtt.PASSWORD.name()).setValue("");
+        user.getAt(PersonAtt.CONTACT_EMAIL.name()).setValue("");
+        user.getAt(PersonAtt.CONTACT_TEL.name()).setValue("");
+        user.getAt(PersonAtt.IMG_URL.name()).setValue("");
+        user.getAt(PersonAtt.ID.name()).setValue("");
+        user.getAt(PersonAtt.INFO.name()).setValue("");
+        user.getAt(PersonAtt.IS_USER.name()).setValue(false);
+        setUserID(String.valueOf(EMPTY_USER_ID));
+    }
+
     public static String getUserID(){
-        System.out.println("[PersonController]getUserID()--> server's current user has ID: " + user.getId());
         return user.getId();
     }
 
