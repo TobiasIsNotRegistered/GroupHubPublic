@@ -1,59 +1,55 @@
-# OpenDolphin Template
+# GroupHub (🐬 + 🍽)
 
-This project provides a template for using [OpenDolphin](http://open-dolphin.org) 
+Dieses Projekt verspricht eine einfache Lösung, um sich für ein Essen zu verabreden.
 
-- with plain Java 
-- with a simple Servlet started through Jetty
-- with JavaFX as the client technology
-- with Gradle for build automation.
+- mit purem Java
+- mit einem einfachen Servlet, welches über Jetty gestartet wird
+- mit Android als Client-Technologie
+- mit Gradle als Build-Automation
 
-## Quick Setup
-
-Prerequisite: Java 8 or above.
-
-Git clone to a location of your liking and you will see a gradle multi-project build.
-
-It contains the following modules/projects
-- client: in a remote scenario, this is the client. It typically contains only view classes.
-- server: in a remote scenario, this is the server. It typically contains controller actions.
-- shared: this one is totally optional. If used, it typically contains shared constants between client and server.
-- combined: combines all the above in one JVM for starting with the in-memory configuration for develop/test/debug.
-
-## Application introduction
-
-We implement a very simple application that contains only a simple header section and an editor area
-with three labels, two text fields to show the various binding options.
-'Save' will do nothing but printing all modified attributes
-on the server side. 'Reset' is used to reset all modified attributes to their initial value (or the value that has been saved).
-'Next' will load a new 'Person' via a service call. 'German' and 'English' are for multi-language support.
-
-'Save' and 'Reset' buttons are only enabled if there is really something to save/reset, i.e. at least one attribute value is dirty.
-The dirty state is also visualized via a CSS class (background color changes).
-
-The 'Name' field is marked as mandatory using a green border.
-
-##Running the samples
-
-###JavaFx example
-
-Using Gradle you can call the following to start the application in **combined mode**, i.e. both server and client in a single JVM.
-
-    ./gradlew run 
+## Autoren
+* Tobias Sigel
+* Mario Winiker
 
 
-When running the application in **server mode** make sure that the server application is running too. To do so, call
+## Arbeitsumgebung
+- Java 8 JDK: http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+- Git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+- Java IDE ihrer Wahl, empfohlen wird IntelliJ: https://www.jetbrains.com/idea/download/#section=windows
+- AndroidStudio 3.0+. Es wird später ein VirtualDevice mit API-Level 26+ benötigt. https://developer.android.com/studio/index.html
+- Gradle: https://gradle.org/install/
 
-    ./gradlew jettyRun
-    
-With a server running, you can start a client. Run from the client-module 
+## OpenDolphin Server-Applikation starten
+API-Level 1.8
+1. Erstelle einen lokalen Ordner mit dem Namen «GroupHubRocks» in deinem Workspace. Ausrufezeichen sind leider nicht erlaubt, wir haben es ausprobiert.
+2. Erstelle zwei weitere Ordner innerhalb des «GroupHubRocks»-Ordners. Am besten passen die Namen «Server» und «Android».
+3. Führe mit «Shift+Rechtsklick» im Ordner «Server» Git-Bash aus (oder starte cmd).
+4. Erstelle ein neues lokales Git-Repo mit git init.
+5. Füge dem lokalen Repo unser GitHub Remote-Repo hinzu: `git remote add origin https://github.com/FHNW-IP5-IP6/GroupHubFX.git`
+6. Lade den Branch «AAA_final_server_open_dolphin» herunter mit `git pull origin AAA_final_server_open_dolphin`
+7. Wechsle auf den Branch  «AAA_final_server_open_dolphin» mit `git checkout AAA_final_server_open_dolphin`
 
-    myapp.MyRemoteStarter
-    
-## More Info
+Das Projekt befindet sich nun im Ordner «Server» und kann von der IDE importiert werden.
 
-This has only been a first glance into the way that OpenDolphin operates.
+/Der Server kann jetzt gestartet werden:/ 
+* Führe `gradlew install` in der Kommandozeile des Projektes aus (alt+F12)  aus.
+* Führe das Kommando `gradlew jettyRun` aus
 
-Many more features are available and you may want to check out the
-- user guide (http://open-dolphin.org/download/guide/index.html), the
-- other demo sources (http://github.com/canoo/open-dolphin/tree/master/subprojects/demo-javafx), or
-- the video demos (http://www.youtube.com/user/dierkkoenig).
+## Android-Client starten
+Es wird ein Emulator-Image mit API-Level 26+ benötigt. Es wird auch die Installation von «Haxm» auf dem Image (wird im Installer gefragt) empfohlen. Source- und Target Compatibility sind beide 1.8 (genau gleich wie bei dem Server).
+* Wiederhole die Schritte 2 bis 4 aus dem Server-Teil aber im Ordner «Android».
+* Lade den Branch «AAA_final_android» mit `git pull origin AAA_final_android`
+* Wechsle in den Branch «AAA_final_android» mit `git checkout AAA_final_android`
+
++ Das Android-Projekt ist nun im Ordner «Android» abgelegt und kann von Android Studio importiert werden.
++ Ist ein Emulator-Image mit API-Level 26+ installiert, so kann man jetzt die 
+
+/Applikation starten:/
+* Klicke in Android Studio auf das grüne Play-Symbol in der oberen Toolbar. 
+* Wähle das Image mit API-Level 26+ aus und bestätige dieses.
+
+Hinweis: Es kann sein, dass die «Intel Virtualization Technology» im BIOS ihres Computers aktiviert werden muss. Die Einstellungen dazu können pro Hersteller unterschiedlich. Die Aufarbeitung des Android-Projektes benötigt beim ersten Start einiges an Zeit.
+
+Die Login-Daten für die Android-Applikation sind wie folgt:
+Dierk Koenig, Dieter Holz, Mario Winiker, Tobias Sigel → mit dem PW «admin»
+alle anderen in der Applikation ersichtlichen Benutzer → mit dem PW «GroupHubRocks!»
